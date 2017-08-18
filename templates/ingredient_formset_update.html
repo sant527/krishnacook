@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}  
+
+{% block detail_link %}
+  <li><a href='{% url "ingredients:formsetedit" %}'>Ingredients Bulk Edit</a></li>
+{% endblock %}
+
+{% block content %}
+
+<div class='container'>
+    <div class="row">
+        <div class="col-xs-12">
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "q" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='q' placeholder='Search' value='{{ request.GET.q }}'/>
+                <input type='submit' value='Search' />
+            </form>
+        </div>
+    </div>
+</div>
+<hr/>
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+                {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+                {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ object_list.object_list|length }}
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "count" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=type{{ new }}"> Type </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=-name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=-id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=-date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=-type{{ new }}"> Type </a> </b>
+    </div>
+</div>
+
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1500px;">
+        <div class="row" style="border-top:1px solid;padding-top:20px">
+            <div class="col-xs-2" style='width:100px;text-align:center'>S.No</div>
+            <div class="col-xs-2" style='width:250px;text-align:center'>Ingredient</div>
+            <div class="col-xs-2" style='width:150px;text-align:center'>MUnit</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>Rate</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>Type of Ingr</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>kg/ltr</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>pcs/kg</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>pcs/ltr</div>
+        </div>
+    {% crispy formset helper %}
+</div>
+
+
+<div class='container'>
+    <div class="row">
+        <div class="col-xs-12">
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "q" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='q' placeholder='Search' value='{{ request.GET.q }}'/>
+                <input type='submit' value='Search' />
+            </form>
+        </div>
+    </div>
+</div>
+<hr/>
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+                {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+                {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ object_list.object_list|length }}
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "count" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=type{{ new }}"> Type </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=-name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=-id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=-date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=-type{{ new }}"> Type </a> </b>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% load ingredient_quantity %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+  <li><a href='{{ instance.get_absolute_url_detail }}'>{{ instance.name }}</a></li>
+{% endblock %}
+
+{% load ingredient_quantity %}
+
+{% block content %}
+
+
+     <div class="container">
+    <h3> {{ instance.name }}</h1><br>
+    <b><a href='{{ instance.menu_ingredient_custom_recipe_ingredients }}'>Ingredients</a>::</b>
+    <b><a href='{{ instance.menu_ingredient_custom_recipe_recipes }}'>Recipes</a></b>
+    </div>
+
+    <hr/>
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 900px;">
+    <div class="row simhaf">
+        <div class="col-xs-1" style="width:50px"><b>S.No</b></div>
+        <div class="col-xs-1" style="width:200px"><b>Recipes</b></div>
+        <div class="col-xs-1" style="width:130px"><b>Cost per Unit</b></div>
+        <div class="col-xs-1" style="width:70px"><b>Persons</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Qty per person</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Total Qty</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Total Cost</b></div>
+        <div class="col-xs-1" style="width:130px"><b>Cost/person</b></div>
+    </div>
+    {% for obj in instance.menu_positions.all %}
+    {% mvwith obj.dict_custom_factor_cost_prop_menurecipe as mrec_prop %}
+    <div class="row">
+        <!-- S.No -->
+        <div class="col-xs-1 simha" style="width:50px">{{ forloop.counter }}</div>
+        <!-- Recipes -->
+        <div class="col-xs-1 simha" style="width:200px">{{ obj.menurecipe.name }}</div>
+        <!-- Cost per unit -->
+        <div class="col-xs-1 simha" style="width:130px">
+            Rs {{ mrec_prop.cost_per_basic_unit|floatformat:4 }} / {{ mrec_prop.basic_unit }}
+        </div>
+        <!-- Persons -->
+        <div class="col-xs-1 simha" style="width:70px">{{ obj.persons|floatformat:0 }}</div>
+        <!-- Qty per persons -->
+        <div class="col-xs-1 simha" style="width:100px">{{ mrec_prop.consumption|floatformat:0 }} {{ mrec_prop.consumption_unit  }}/p</div>
+        <!-- Total Qty -->
+        <div class="col-xs-1 simha" style="width:100px">
+            {{ mrec_prop.factor_basic_qty|floatformat:0  }} {{ mrec_prop.factor_basic_unit }} 
+        </div>
+        <!-- Total Cost -->
+        <div class="col-xs-1 simha" style="width:100px">Rs {{ mrec_prop.fact_total_cost|floatformat:2  }}</div>
+        <!-- Cost/Person -->
+        <div class="col-xs-1 simha" style="width:130px;">Rs {{ mrec_prop.cost_per_person|floatformat:4 }}/p
+        </div>
+    </div>
+    {% endfor %}
+    <hr>
+    {% mvwith instance.dict_custom_prop_total_people_cost_menu as menu_prop %}
+
+    <!-- Average number of poeple-->
+    <div class="row">
+        <div class="col-xs-1 simha" style="width:50px"></div>
+        <div class="col-xs-1 simha" style="width:330px">Average No: People</div>
+        <div class="col-xs-1 simha" style="width:400px">
+            ({% for obj in instance.menu_positions.all %}
+                {{ obj.persons|floatformat:0 }} p 
+
+                {% if not forloop.last %}
+                + 
+                {% endif %} 
+            {% endfor %}) / {{ menu_prop.number_of_recipes }} = {{ menu_prop.avgpeople|floatformat:0 }} p
+        </div>
+    </div>
+
+    <!-- Total Cost --> 
+    <div class="row">
+        <div class="col-xs-1 simha" style="width:50px"></div>
+        <div class="col-xs-1 simha" style="width:330px">Total Cost</div>
+        <div class="col-xs-1 simha" style="width:400px">
+        {% for obj in instance.menu_positions.all %}
+            {% mvwith obj.dict_custom_factor_cost_prop_menurecipe as mrec_prop %}
+            Rs {{ mrec_prop.fact_total_cost|floatformat:2 }}
+
+            {% if not forloop.last %}
+            + 
+            {% endif %} 
+        {% endfor %} = 
+
+        Rs {{ menu_prop.factor_total_cost|floatformat:2 }} 
+        </div>
+    </div>
+
+    <!-- Average cost per person -->
+    <div class="row">
+        <div class="col-xs-1 simha" style="width:50px"></div>
+        <div class="col-xs-1 simha" style="width:330px">Average Cost per person</div>
+        <div class="col-xs-1 simha" style="width:400px">
+             {{ menu_prop.factor_total_cost|floatformat:2 }} / {{ menu_prop.avgpeople|floatformat:2 }} = Rs {{ menu_prop.avg_cost_per_person|floatformat:2 }}/p
+        </div>
+    </div>
+
+    <!-- Sum of individual costs per person -->
+    <div class="row">
+        <div class="col-xs-1 simha" style="width:50px"></div>
+        <div class="col-xs-1 simha" style="width:330px">Aggregate Cost per person</div>
+        <div class="col-xs-1 simha" style="width:400px">
+        {% for obj in instance.menu_positions.all %}
+            {% mvwith obj.dict_custom_factor_cost_prop_menurecipe as mrec_prop %}
+             Rs {{ mrec_prop.cost_per_person|floatformat:2 }}/p 
+            
+             {% if not forloop.last %}
+             + 
+             {% endif %} 
+             
+         {% endfor %}
+         =  Rs {{ menu_prop.total_cost_per_person|floatformat:1 }}/p
+        </div>
+    </div>
+
+</div>
+    
+    <div class="container">
+    <h3> Total Quantitites </h3>
+    </div>
+
+    <hr/>
+    <div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 1050px;">
+    <div class="row simhaf">
+        <div class="col-xs-2" style="width:50px"><b>S.No</b></div>
+        <div class="col-xs-1" style="width:250px"><b>Recipe Name</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Persons</b></div>
+        <div class="col-xs-1" style="width:150px"><b>Consumption capacity</b></div>
+        <div class="col-xs-1" style="width:120px"><b>Total Liters</b></div>
+        <div class="col-xs-1" style="width:120px"><b>Total Kgs</b></div>
+        <div class="col-xs-1" style="width:120px"><b>Total Pcs</b></div>
+    </div>
+    {% for obj in instance.menu_positions.all %}
+
+    {% mvwith obj.dict_custom_factor_cost_prop_menurecipe as mrec_prop %}
+    <div class="row">
+        
+        <!-- S.No -->
+        <div class="col-xs-2" style="width:50px">{{ forloop.counter }}</div>
+        
+        <!-- Recipe Name -->
+        <div class="col-xs-1 simha" style="width:250px">{{ obj.menurecipe.name }}</div>
+        
+        <!-- Persons -->
+        <div class="col-xs-1 simha" style="width:100px">{{ obj.persons }}</div>
+        
+        <!-- Consumption Capacity -->
+        <div class="col-xs-1 simha" style="width:150px">{{ mrec_prop.consumption|floatformat:1 }} {{ mrec_prop.consumption_unit }}/p</div>
+        
+        <!-- Total Liters -->
+        <div class="col-xs-1 simha" style="width:120px">
+            {% if mrec_prop.consumption_unit == "ml" %}
+                {{ mrec_prop.factor_basic_qty|floatformat:2 }} ltr
+            {% endif %}
+        </div>
+        
+        <!-- Total Kgs -->
+        <div class="col-xs-1 simha" style="width:120px">
+            {% if mrec_prop.consumption_unit == "g" %}
+                {{ mrec_prop.factor_basic_qty|floatformat:2 }} kg
+            {% endif %}
+
+        </div>
+
+        <!-- Total Pcs -->
+        <div class="col-xs-1 simha" style="width:120px">
+            {% if mrec_prop.consumption_unit == "pcs" %}
+                {{ mrec_prop.factor_basic_qty|floatformat:2 }} pcs
+            {% endif %}
+
+        </div>
+    
+    </div>
+    {% endfor %}
+
+    {% mvwith instance.dict_custom_prop_total_people_cost_menu as menu_prop %}
+    <div class="row simhaf">
+        <!-- S.No and Recipe Name -->
+        <div class="col-xs-1" style="width:300px"><b>Total Quantites</b></div>
+
+        <!-- Persons -->
+        <div class="col-xs-1" style="width:100px"></div>
+
+        <!-- Consumption Capacity -->
+        <div class="col-xs-1" style="width:150px"></div>
+
+        <!-- Total Liters -->
+        <div class="col-xs-1" style="width:120px">
+           {% if menu_prop.ltr_total != 0 %}
+               = {{ menu_prop.ltr_total|floatformat:2 }} ltr
+           {% endif %}
+        </div>
+
+        <!-- Total Kgs -->
+        <div class="col-xs-1" style="width:120px">
+           {% if menu_prop.kg_total != 0 %}
+               = {{ menu_prop.kg_total|floatformat:2 }} kg
+           {% endif %}
+        </div>
+
+        <!-- Total Pcs -->
+        <div class="col-xs-1" style="width:120px">
+           {% if menu_prop.pcs_total != 0 %}
+               = {{ menu_prop.pcs_total|floatformat:2 }} pcs
+           {% endif %}
+        </div>
+
+    </div>
+</div>
+<hr>
+
+
+<div class='container'>
+
+    {% include "messages_display.html" %}
+
+    {% crispy form %}
+    <hr/>
+    {{ form.errors }}<br>
+    {{ form.non_field_errors }}
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}
+{% block content %}
+
+<div class='container'>
+    <h1> {{ instance.name }}</h1>
+</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1600px;">
+	<form action="" method="post">
+		{% csrf_token %}
+	    {{ formset.management_form|crispy }}
+
+	    <div class="row" style="border-top:1px solid;padding-top:20px">
+			<div class="col-xs-2" style='width:100px;text-align:center'>S.No</div>
+			<div class="col-xs-2" style='width:150px'>Ingredient</div>
+			<div class="col-xs-2" style='width:100px;text-align:center'>Type of Ingr</div>
+			<div class="col-xs-2" style='width:130px;text-align:center'>Default Rate</div>
+			<div class="col-xs-2" style='width:150px;text-align:center'>Rate</div>
+			<div class="col-xs-1" style='width:150px;text-align:center'>Density factor</div>
+	        <div class="col-xs-2" style='width:120px;text-align:center'>kg/ltr</div>
+			<div class="col-xs-2" style='width:120px;text-align:center'>Default kg/ltr</div>
+			<div class="col-xs-2" style='width:120px;text-align:center'>pcs/ltr</div>
+			<div class="col-xs-2" style='width:120px;text-align:center'>Default pcs/kg</div>
+			<div class="col-xs-2" style='width:120px;text-align:center'>pcs/ltr</div>
+			<div class="col-xs-1" style='width:120px;text-align:center'>Default pcs/ltr</div>
+		</div>
+
+		{% for subform in formset %}
+
+		<div class="row" style="border-top:1px solid;padding-top:20px">
+
+			<!-- S.No -->
+			<div class='col-xs-2', style='width:100px;text-align:center'>
+				{{ forloop.counter }}
+				{{ subform.id }} 
+				{{ subform.ingredient|as_crispy_field }}
+			</div>
+
+			<!-- Name of the ingredient -->
+			<div class='col-xs-2', style='width:150px'>
+				{{ subform.instance.ingredient.name  }}
+			</div>
+
+
+			<!-- Type of Ingredient -->
+			<div  class='col-xs-2', style='width:100px'>
+				{{ subform.instance.ingredient.typeofingredient  }}
+			</div>
+
+			<!-- Default Rate -->
+			<div  class='col-xs-2', style='width:130px'>
+				{{ subform.instance.ingredient.rate  }} Rs/{{ subform.instance.ingredient.munit  }}
+			</div>
+
+			<!-- Rate -->
+			<div  class='col-xs-2', style='width:150px'>
+				{{ subform.rate|as_crispy_field  }}
+			</div>
+
+			<!-- Density factors -->
+			{% ingredient_qty_rate_cost_custom_ingredient subform.instance.ingredient instance as ingr_prop %}
+			<div class="col-xs-1" style='width:150px;text-align:center'>
+				{{ ingr_prop.density_fact }}
+			</div>
+
+	        <!-- Density kg/ltr -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.density_kg_per_lt|as_crispy_field  }}
+			</div>
+
+			<!-- Default Density -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.instance.ingredient.density_kg_per_lt  }} kg/lt
+			</div>
+
+			<!-- Density pcs/kg -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.density_pcs_per_kg|as_crispy_field  }}
+			</div>
+
+			<!-- Default Density -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.instance.ingredient.density_pcs_per_kg  }} pcs/kg
+			</div>
+
+			<!-- Density pcs/ltr -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.density_pcs_per_lt|as_crispy_field  }}
+			</div>
+
+			<!-- Default Density -->
+			<div  class='col-xs-2', style='width:120px'>
+				{{ subform.instance.ingredient.density_pcs_per_lt  }} pcs/lt
+			</div>
+
+		</div>	
+		{% endfor %}
+		<div class="form-actions"> 
+			<input name="submit" value="Save" class="btn btn-primary" id="submit-id-submit" type="submit"> 
+		</div>
+	</form>
+</div>
+{% endblock content %}
+

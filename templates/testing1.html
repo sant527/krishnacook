@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %} 
+
+{% block content %}
+<!-- 
+<form method="post" action="">
+	/{/% csrf_token %} 
+    /{//{/ formset }}
+    <input type="submit" value="Save" />
+</form> -->
+
+
+<!-- <form method="post" action="">
+    /{//{/ formset.management_form }}
+    /{/% for form in formset %}
+        /{/% for field in form %}
+            /{//{/ field.label_tag }} /{//{/ field }}
+        /{/% endfor %}
+    /{/% endfor %}
+</form> -->
+
+<form method="post" action="">
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form.id }}
+        <ul>
+            <li>{{ form.name }}</li>
+        </ul>
+    {% endfor %}
+</form>
+
+
+{% endblock content %}

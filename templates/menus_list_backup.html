@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+{% endblock %}
+
+{% block content %}
+
+
+<div class='container'>
+    <div class="row">
+            <div class="col-xs-5">
+            <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+            {{ form|crispy }}
+            <div class="col-xs-2"><input type='submit' class='btn btn-default' value='Create' /></div>
+            </form>
+        </div>
+    </div>
+
+    {% include "messages_display.html" %}
+</div>
+<hr>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 5000px;">
+
+    <hr/>
+    <div class="row simhaf">
+        <div class="col-xs-2" style="width:50px"><b>S.No</b></div>
+        <div class="col-xs-2" style="width:50px"><b>Id</b></div>
+        <div class="col-xs-1" style="width:150px"><b>Name</b></div>
+        <div class="col-xs-1" style="width:400px"><b>Recipes</b></div>
+        <div class="col-xs-1" style="width:170px"><b>Avg No: People</b></div>
+        <div class="col-xs-1" style="width:200px"><b>Total Cost</b></div>
+        <div class="col-xs-1" style="width:170px"><b>Avg Cost per Person</b></div>
+        <div class="col-xs-1" style="width:170px"><b>Total Cost </b></div>
+        <div class="col-xs-1" style="width:100px"><b>Up Date</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Cr Date</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Edit</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Delete</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Slug</b></div>
+    </div>
+    <hr/>
+
+    {% for instance in object_list %}
+    <div class="row">
+            <div class="col-xs-2" style="width:50px">{{ forloop.counter }}</div>
+            <div class="col-xs-2" style="width:50px"><b>{{ instance.id }}</b></div>
+            <div class="col-xs-1" style="width:150px"><b><a href='{{ instance.get_absolute_url_detail }}'>{{ instance.name }}</a></b><b><a href='{{ instance.get_absolute_url_menu_update_inline_bulk_recipes }}'>/Edit/</a><a href='{{ instance.get_absolute_url_customingredient }}'>Custom List</a></b><b><a href='{{ instance.menu_ingredient_custom_inlineformset_bulk_edit }}'>/Bulk Edit</a></b><b><a href='{{ instance.menu_ingredient_custom_recipe_report }}'>/Default_custom_Edit</a></b></div>
+            <div class="col-xs-1 simha" style="width:400px;">
+            No of recipes - {{ instance.get_number_of_recipes }} <br>
+            <ul>
+            {% for obj in instance.menu_positions.all %}
+                <li>
+                    {{ obj.persons|floatformat:0 }} p 
+                    :: {{ obj.get_person_consumption_dict_single.qty|floatformat:0 }} {{ obj.get_person_consumption_dict_single.unit  }}/p 
+                    :: {{ obj.menurecipe.name }} 
+                    :: Rs {{ obj.cost_per_recipe_for_the_consumption_unit_class.cost|floatformat:4 }} / {{ obj.cost_per_recipe_for_the_consumption_unit_class.unit }} <br>
+                    Rs {{ obj.total_cost_for_total_quantity_kg_lt_pc_dict_single.qty|floatformat:2  }}  for
+                    {{ obj.total_quantity_in_kg_lt_pcs_dict_single.qty|floatformat:0  }} {{ obj.total_quantity_in_kg_lt_pcs_dict_single.unit }} 
+                    :: Rs {{ obj.total_cost_per_person_kg_lt_pc_dict_single.qty|floatformat:4 }}/p
+                </li>
+            {% endfor %}
+            </ul>
+            </div>
+            {% mvwith instance.average_number_of_people_dict as menu_prop %}
+            <!-- Average no: of people -->
+            <div class="col-xs-1 simha" style="width:170px;">
+            ({% for obj in instance.menu_positions.all %}
+            {{ obj.persons|floatformat:0 }} p 
+
+            {% if not forloop.last %}
+            + <br>
+            {% endif %} 
+            {% endfor %}) / {{ menu_prop.countr }}<br> = {{ menu_prop.avgp|floatformat:0 }}
+            </div>
+            <!-- Total Cost -->
+            <div class="col-xs-1 simha" style="width:200px;">
+            {% for obj in instance.menu_positions.all %}
+            Rs {{ obj.total_cost_for_total_quantity_kg_lt_pc_dict_single.qty|floatformat:2 }} for  {{ obj.total_quantity_in_kg_lt_pcs_dict_single.qty|floatformat:0  }} {{ obj.total_quantity_in_kg_lt_pcs_dict_single.unit }}
+
+            {% if not forloop.last %}
+            + <br>
+            {% endif %} 
+            {% endfor %} <br>= 
+
+            Rs {{ menu_prop.total_cost|floatformat:2 }} </div>
+            <!-- average cost per person -->
+            <div class="col-xs-1 simha" style="width:170px;">
+            {{ menu_prop.total_cost|floatformat:2 }} / {{ menu_prop.avgp|floatformat:2 }} <br>= Rs {{ menu_prop.avg_cost_per_person|floatformat:2 }}/p
+            </div>
+            <!-- total coast per person -->
+            <div class="col-xs-1 simha" style="width:170px;">
+            {% for obj in instance.menu_positions.all %}
+                 Rs {{ obj.total_cost_per_person_kg_lt_pc_dict_single.qty|floatformat:2 }}/p 
+                
+                 {% if not forloop.last %}
+                 +<br>
+                 {% endif %} 
+                 
+             {% endfor %}
+              <br>=  Rs {{ instance.cost_per_person_add_independent|floatformat:1 }}/p
+            </div>
+            <div class="col-xs-1 simha" style="width:100px;">{{ instance.updated }}</div>
+            <div class="col-xs-1 simha" style="width:100px;">{{ instance.timestamp }}</div>
+            <div class="col-xs-1 simha" style="width:100px;"><b><a href='{{ instance.get_absolute_url_update }}'>Edit</a></b></div>
+            <div class="col-xs-1 simha" style="width:100px;"><b><a href='{{ instance.get_absolute_url_confirm }}'>Delete</a></b></div>
+            <div class="col-xs-1 simha" style="width:100px">{{ instance.slug }}</div>
+    </div>
+
+<hr/>
+{% endfor %}
+</div>
+<div class="container">
+<div class="pagination">
+    <span class="step-links">
+        {% if object_list.has_previous %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+        </span>
+
+        {% if object_list.has_next %}
+            <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{% url "recipes:formsetcreate" %}'>Recipes Bulk Create</a></li>
+{% endblock %}
+
+
+{% block content %}
+    {% include "messages_display.html" %}
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1500px;">
+    {% crispy formset helper %}
+</div>
+
+{% endblock content %}

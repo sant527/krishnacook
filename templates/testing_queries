@@ -1,0 +1,40 @@
+from django.core.paginator import Paginator
+
+queryset_list = Recipe.objects.all().prefetch_related()
+count = 50
+paginator = Paginator(queryset_list, count)
+page=2
+queryset = paginator.page(page)
+object_list = queryset
+
+print('%s :: %s' %("object_list.end_index",object_list.end_index()))
+print('%s :: %s' %("object_list.number",object_list.number))
+print('%s :: %s' %("object_list.object_list",object_list.object_list))
+print('%s :: %s' %("object_list.paginator",object_list.paginator.count))
+print('%s :: %s' %("object_list.paginator",object_list.paginator.num_pages))
+print('%s :: %s' %("object_list.previous_page_number",object_list.previous_page_number()))
+print('%s :: %s' %("object_list.start_index",object_list.start_index()))
+
+
+
+
+
+
+
+for obj in object_list:
+	print('%s-%s' %("obj.id",obj.id))
+	if obj.mass_quantity and obj.mass_unit:
+		print('%s-%s' %("obj.mass_quantity",obj.mass_quantity))
+		print('%s-%s' %("obj.mass_unit.slug",obj.mass_unit.slug))
+	print('%s-%s' %("obj.name",obj.name))
+	if obj.pieces_quantity and obj.pieces_unit:
+		print('%s-%s' %("obj.pieces_quantity",obj.pieces_quantity))
+		print('%s-%s' %("obj.pieces_unit".slug,obj.pieces_unit.slug))
+	print('%s-%s' %("obj.slug",obj.slug))
+	print('%s-%s' %("obj.timestamp",obj.timestamp))
+	print('%s-%s' %("obj.updated",obj.updated))
+	if obj.volume_quantity and obj.volume_unit:
+		print('%s-%s' %("obj.volume_quantity",obj.volume_quantity))
+		print('%s-%s' %("obj.volume_unit.slug",obj.volume_unit.slug))
+
+

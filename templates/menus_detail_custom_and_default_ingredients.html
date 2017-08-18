@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+  <li><a href='{{ instance.get_absolute_url_detail }}'>{{ instance.name }}</a></li>
+{% endblock %}
+
+{% load ingredient_quantity %}
+
+{% block content %}
+
+
+ <div class="container">
+    <h3> List of Ingredients Required</h1>
+    <b><a href='{{ instance.menu_ingredient_custom_inlineformset_bulk_edit }}'>Bulk Edit</a></b><br>
+    
+</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;;padding-left: 20px;padding-right: 20px;width: 3000px;">
+
+    <div class="row" style="border-top:1.5px solid;">
+        <div class="col-xs-2 simha" style="width:50px">S.No</div>
+        <div class="col-xs-2 simha" style="width:300px">Ingredient</div>
+        <div class="col-xs-2 simha" style="width:100px">Type of Ingr</div>
+        <div class="col-xs-2 simha" style="width:1400px">
+            <div class="row" style="width:1400px">
+                <div class="col-xs-1" style="width:300px;"> S.No / Sq.No</div>
+                <div class="col-xs-1" style="width:1100px">
+                    <div class="row">
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:center">S.No / Sq.No</div>
+                        <div class="col-xs-2 simha2" style="width:200px;text-align:left">Name</div>
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">Yeild Bulk Qty</div>
+                        <div class="col-xs-1 simha2"  style="width:100px;text-align:left">Unit</div>
+                        <div class="col-xs-1 simha" style="width:100px;text-align:center">factor</div>
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">Req Bulk Qty</div>
+                        <div class="col-xs-1 simha2"  style="width:100px;text-align:left">Unit</div>
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">Req Basic Qty (kg/ltr/pcs)</div>
+                        <div class="col-xs-1 simha2"  style="width:70px;text-align:left">Unit</div>
+                        <div class="col-xs-1 simha2" style="width:90px;text-align:right">density factor</div>
+                        <div class="col-xs-1 simha2" style="width:90px;text-align:right">cost quantity</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1 simha2" style="width:90px;text-align:right">cost quantity</div>
+        <div class="col-xs-1 simha2" style="width:110px;text-align:right">rate</div>
+        <div class="col-xs-1 simha2" style="width:110px;text-align:right">cost</div>
+        <div class="col-xs-2 simha" style="width:300px">Ingredient</div>
+    </div>
+    
+    {% for ingredient in ingredients_dictinct %}
+    <div class="row" style="border-top:1.5px solid;">
+        <!-- Ingredient S.No -->
+        <div class="col-xs-2 simha" style="width:50px">{{ forloop.counter }}</div>
+        
+        <!-- Ingredient Name -->
+        <div class="col-xs-2 simha" style="width:300px">
+            {{ ingredient.name }}
+        </div>
+
+        <!-- Type of Ingredient -->
+        <div class="col-xs-2 simha" style="width:100px">{{ ingredient.typeofingredient}}</div>
+
+        <!-- MenuPositions of each Ingredient -->
+        <div class="col-xs-2 simha" style="width:1400px">
+        
+        <!-- get the menupositions in which the ingredient it used -->
+        {% ingredient_menu_recipes  ingredient instance as menupositions %}
+        {% for menuposition in menupositions %} 
+            <div class="row" style="width:1400px">
+
+                <div class="col-xs-1" style="width:300px;">
+                {% if menuposition.name == menuposition.menurecipe.name %}
+                    {{ forloop.counter }}({{ menuposition.id }}). {{ menuposition.name }}
+                {% else %}
+                     {{ forloop.counter }}({{ menuposition.id }}). {{ menuposition.name }}({{ menuposition.menurecipe.name }})
+                {% endif %}
+                </div>
+
+                <div class="col-xs-1" style="width:1100px">
+                    <!-- get the recipeposition in which the ingredient is used -->
+                    {% ingredient_recipepositions ingredient menuposition as recipepositions %}
+                    {% for recipeposition in recipepositions %}
+                    <div class="row">
+                      
+                        
+                        <!-- S.No -->
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:center">{{ forloop.counter }}({{ recipeposition.sequence_number }})</div>
+                        
+                        <!-- Ingredient Name(Notes) -->
+                        <div class="col-xs-2 simha2" style="width:200px;text-align:left">
+                        {% if recipeposition.cooking_notes != "" %}
+                        <b>{{ recipeposition.name }}</b><i> ({{ recipeposition.cooking_notes }})</i>
+                        {% else %}
+                        <b>{{ recipeposition.name }}</b>
+                        {% endif %}
+                        </div>
+                        
+                        {% mvwith menuposition.menurecipe_factor_of_recipe_quantity_wrt_lt_kg_pcs as factor%}
+                        {% list_factor_qty_unit_bulk_and_kg_ltr_pcs_list_recipeposition recipeposition factor as rcplist%}
+                        
+                        <!-- Bulk Qty -->
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.bulk.quantity|floatformat:2 }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Unit -->
+                        <div class="col-xs-1 simha2"  style="width:100px;text-align:left">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.bulk.unit }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- factor -->
+                        
+                        <div class="col-xs-1 simha" style="width:100px;text-align:center"> x {{ factor|floatformat:2  }}</div>
+                        
+                        <!--factored Bulk Qty -->
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.bulk_fact.quantity|floatformat:2 }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Unit -->
+                        <div class="col-xs-1 simha2"  style="width:100px;text-align:left">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.bulk_fact.unit }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+
+                        <!-- factored Basic Qty -->
+                        <div class="col-xs-1 simha2" style="width:80px;text-align:right">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.basic_fact.quantity|floatformat:2 }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                         <!-- Basic Unit -->
+                        <div class="col-xs-1 simha2"  style="width:70px;text-align:left">
+                            {% for var in rcplist %}
+                                {% if var.unit_exists == 1 %}
+                                    {{ var.basic_fact.unit }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% dict_factor_density_cost_custom_ing_recipeposition recipeposition instance factor as rcpdict %}
+
+                        <!-- density factor -->
+                        <div class="col-xs-1 simha2" style="width:90px;text-align:right">
+                            {{ rcpdict.inverse }}{{ rcpdict.density_factor }} {{ rcpdict.density_unit }}
+                        </div>
+
+                        <!-- cost quantity -->
+                        <div class="col-xs-1 simha2" style="width:90px;text-align:right">
+                            {{ rcpdict.cost_quantity_factor|floatformat:2 }} {{ rcpdict.cost_unit }}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% ingredient_qty_rate_cost_custom_ingredient ingredient instance as ingr_prop %}
+        <!-- cost quantity -->
+        <div class="col-xs-1 simha2" style="width:90px;text-align:right">
+            {{ ingr_prop.cost_quantity|floatformat:2 }} {{ ingredient.munit }}
+        </div>
+
+         <!-- rate -->
+        <div class="col-xs-1 simha2" style="width:110px;text-align:right">
+            Rs {{ ingr_prop.rate|floatformat:2 }}/{{ ingredient.munit }}
+        </div>
+
+        <!-- cost -->
+        <div class="col-xs-1 simha2" style="width:110px;text-align:right">
+           Rs {{ ingr_prop.cost|floatformat:2 }}
+        </div>
+
+        <!-- Ingredient Name -->
+        <div class="col-xs-2 simha" style="width:300px">
+            {{ ingredient.name }}
+        </div>
+
+
+    </div>
+{% endfor %}
+</div>
+
+{% endblock content %}

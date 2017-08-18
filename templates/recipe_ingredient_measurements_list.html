@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class='container'>
+<div class="row">
+<div class="col-xs-5">
+<form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+{{ form|crispy }}
+<div class="col-xs-2"><input type='submit' class='btn btn-default' value='Create' /></div>
+</form>
+</div>
+</div>
+
+<hr/>
+<div class="row">
+    <div class="col-xs-2"><b>Name</b></div>
+    <div class="col-xs-1"><b>Slug</b></div>
+    <div class="col-xs-1"><b>Type</b></div>
+    <div class="col-xs-1"><b>Volume-Lts</b></div>
+    <div class="col-xs-1"><b>Mass-Kgs</b></div>
+    <div class="col-xs-1"><b>Pieces-Pcs</b></div>
+    <div class="col-xs-2"><b>Unit</b></div>
+    <div class="col-xs-2"><b>Up Date</b></div>
+    <div class="col-xs-2"><b>Cr Date</b></div>
+    <div class="col-xs-1"><b>Detail</b></div>
+    <div class="col-xs-1"><b>Delete</b></div>
+</div>
+<hr/>
+
+{% for obj in object_list %}
+<div class="row">
+    <div class="col-xs-2">{{ obj.name }}</div>
+    <div class="col-xs-1">{{ obj.slug }}</div>
+    <div class="col-xs-1">{{ obj.form_type }}</div>
+    <div class="col-xs-1">{{ obj.volume_Liters|floatformat:3 }}</div>
+    <div class="col-xs-1">{{ obj.mass_KiloGrams|floatformat:3 }}</div>
+    <div class="col-xs-1">{{ obj.pieces_Numbers|floatformat:3 }}</div>
+    <div class="col-xs-2">{{ obj.updated }}</div>
+    <div class="col-xs-2">{{ obj.timestamp }}</div>
+    <div class="col-xs-1"><b><a href='{{ obj.get_absolute_url_update }}'>Edit</a></b></div>
+    <div class="col-xs-1"><b><a href='{{ obj.get_absolute_url_confirm }}'>Delete</a></b></div>
+</div>
+<hr/>
+{% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if object_list.has_previous %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+        </span>
+
+        {% if object_list.has_next %}
+            <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+{% endblock content %}

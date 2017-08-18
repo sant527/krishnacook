@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% load ingredient_quantity %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+  <li><a href='{{ instance.get_absolute_url_detail }}'>{{ instance.name }}</a></li>
+{% endblock %}
+
+{% load ingredient_quantity %}
+
+{% block content %}
+
+
+<div class='container'>
+    <form method="post">
+        <input type='hidden' name='csrfmiddlewaretoken' value='LD5PnFTbDhwyN8sy70ZBm52mPjeicDBxMWiBO8FQmjCzMlQXr9WAIALzXBz9e90H' />
+        <h3> Add/Edit Recipes to the Event </h3>
+
+        <div class="col-xs-1" style="width:200px">
+            <label for="id_sequence_number">Sq No:</label>
+            <input name="sequence_number" value="0" min="0" id="id_sequence_number" type="number">
+        </div>
+        <div class="row">
+            <div class="col-xs-1" style="width:200px">
+                {{ form.sequence_number.errrors }}
+                {{ form.sequence_number.label_tag }}
+                {{ form.sequence_number }}
+            </div>
+            <div class="col-xs-1" style="width:200px">
+                {{ form.name|as_crispy_field }}
+            </div>
+            <div class="col-xs-1" style="width:200px">
+                {{ form.menurecipe|as_crispy_field }}
+            </div>
+            <div class="col-xs-1" style="width:120px">
+                {{ form.persons|as_crispy_field }}
+            </div>
+        </div>
+        <h4> Consumption per Person(enter only one value) </h4>
+        <div class="row">
+            <div class="col-xs-4" style="width:120px">
+                {{ form.consumption_milli_liters|as_crispy_field }}
+            </div>
+            <div class="col-xs-4" style="width:120px">
+                {{ form.consumption_grams|as_crispy_field }}
+            </div>
+            <div class="col-xs-4" style="width:120px">
+                {{ form.consumption_pieces|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4" style="width:200px">
+                {{ form.title|as_crispy_field }}
+            </div>
+            <div class="col-xs-4" style="width:200px">
+                {{ form.recipe_notes|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="controls ">
+                <input type="submit" name="save" value="Submit" class="btn btn-primary" id="submit-id-save" />
+            </div>
+        </div>
+    </form>
+    <hr/>
+    <br>
+</div>
+
+{% endblock content %}

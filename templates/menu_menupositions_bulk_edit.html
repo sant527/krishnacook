@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{{ url }}'>Menu Recipes Bulk Edit</a></li>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class='container'>
+    <h1> {{ instance.name }}</h1>
+</div>
+
+    {% include "messages_display.html" %}
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 3000px;">
+    {% crispy formset helper %}
+</div>
+
+{% endblock content %}

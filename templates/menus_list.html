@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+{% endblock %}
+
+{% block content %}
+
+
+<div class='container'>
+    <div class="row">
+            <div class="col-xs-5">
+            <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+            {{ form|crispy }}
+            <div class="col-xs-2"><input type='submit' class='btn btn-default' value='Create' /></div>
+            </form>
+        </div>
+    </div>
+
+    {% include "messages_display.html" %}
+</div>
+<hr>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 4050px;">
+
+    <hr/>
+    <div class="row simhaf">
+        <div class="col-xs-2" style="width:50px"><b>S.No</b></div>
+        <div class="col-xs-2" style="width:50px"><b>Id</b></div>
+        <div class="col-xs-1" style="width:350px"><b>Name</b></div>
+        <div class="col-xs-1" style="width:1850px">
+            <div class="row" style="text-align:center"><b>Recipes</b></div>
+            <div class="row" style="border-top:1px solid;">
+                <div class="col-xs-1" style="width:70px"><b>S.No</b></div>
+                <div class="col-xs-1" style="width:200px"><b>Recipes</b></div>
+                <div class="col-xs-1" style="width: 90px"><b>Persons</b></div>
+                <div class="col-xs-1" style="width:150px"><b>Qty per person</b></div>
+                <div class="col-xs-1" style="width:100px"><b>Req Qty</b></div>
+                <div class="col-xs-1" style="width:100px"><b>Req Qty(bulk)</b></div>
+                <div class="col-xs-1" style="width:100px"><b>Yeild Qty(bulk)</b></div>
+                <div class="col-xs-1" style="width:100px"><b>factor (Req/Yei)</b></div>
+                <div class="col-xs-1" style="width:450px">
+                    <div class="row" style="text-align:center"><b>Default</b></div>
+                    <div class="row" style="border-top:1px solid;">
+                        <div class="col-xs-1" style="width:150px">Cost/Unit</div>
+                        <div class="col-xs-1" style="width:150px">Total Cost</div>
+                        <div class="col-xs-1" style="width:150px">Cost/person</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="width:450px">
+                    <div class="row" style="text-align:center"><b>Custom</b></div>
+                    <div class="row" style="border-top:1px solid;">
+                        <div class="col-xs-1" style="width:150px">Cost/Unit</div>
+                        <div class="col-xs-1" style="width:150px">Total Cost</div>
+                        <div class="col-xs-1" style="width:150px">Cost/person</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+
+    {% for instance in object_list %}
+    <div class="row">
+            <div class="col-xs-2" style="width:50px">{{ forloop.counter }}</div>
+            <div class="col-xs-2" style="width:50px"><b>{{ instance.id }}</b></div>
+            <div class="col-xs-1" style="width:350px">
+            {% mvwith instance.dict_default_prop_total_people_cost_menu as menu_prop_def %}
+            {% mvwith instance.dict_custom_prop_total_people_cost_menu as menu_prop_cus %}
+                <!-- Titel -->
+                <b>
+                    <a href='{{ instance.get_absolute_url_update }}'>{{ instance.name }}</a>
+                </b> (
+                <!-- Edit and Delete -->
+                <b>
+                    <a href='{{ instance.get_absolute_url_menu_update_inline_bulk_recipes }}'>Bulk Edit</a> ::
+                    <a href='{{ instance.get_absolute_url_delete }}' onclick="return confirm('Are you sure want to delete');">Delete</a>
+                </b>)<br>
+                Total qty: 
+                    {% if menu_prop_def.ltr_total != 0 %}
+                        {{ menu_prop_def.ltr_total|floatformat:2 }} ltr
+                    {% endif %}
+                    {% if menu_prop_def.kg_total != 0 %}
+                        + {{ menu_prop_def.kg_total|floatformat:2 }} kg
+                    {% endif %}
+                    {% if menu_prop_def.pcs_total != 0 %}
+                        + {{ menu_prop_def.pcs_total|floatformat:2 }} pcs
+                    {% endif %}
+                <div class="row" style="border-top:1px solid;">
+                    <div class="col-xs-1" style="width:175px">
+                        <b><a href='{{ instance.get_absolute_url_detail }}'>Default </a>::</b>
+                        <b><a href='{{ instance.menu_ingredient_default_inlineformset_bulk_edit }}'>Ingr Edit</a></b>
+                        <br>
+                        
+                        Av No.prs: {{ menu_prop_def.avgpeople|floatformat:0 }} <br>
+                        TC: Rs {{ menu_prop_def.factor_total_cost|floatformat:2 }}<br>
+                        AC/prs: Rs {{ menu_prop_def.avg_cost_per_person|floatformat:2 }}/p<br>
+                        AGC/prs: Rs {{ menu_prop_def.total_cost_per_person|floatformat:1 }}/p
+
+                    </div>
+                    
+                    <div class="col-xs-1" style="width:175px">
+                        <b><a href='{{ instance.menu_ingredient_custom_recipe_report }}'>Custom</a>::</b>
+                        <b><a href='{{ instance.menu_ingredient_custom_inlineformset_bulk_edit }}'>Ingr Edit</a></b>
+                        <br>
+                        
+                        Av No.prs: {{ menu_prop_cus.avgpeople|floatformat:0 }} <br>
+                        TC: Rs {{ menu_prop_cus.factor_total_cost|floatformat:2 }}<br>
+                        AC/prs: Rs {{ menu_prop_cus.avg_cost_per_person|floatformat:2 }}/p<br>
+                        AGC/prs: Rs {{ menu_prop_cus.total_cost_per_person|floatformat:1 }}/p
+                    </div>
+                </div>
+                <br>
+                <b><a href='{{ instance.get_url_menu_ingredient_custom_clear_all_values }}' onclick="return confirm('Are you sure want to delete');">Clear Cust Ingrd </a></b> :: 
+                <b><a href='{{ instance.get_url_menu_ingredient_custom_sync_with_default }}' onclick="return confirm('Are you sure want to delete');">Sync Custom to Default </a></b>
+
+            </div>
+            <div class="col-xs-1 simha" style="width:1850px;">
+            {% for obj in instance.menu_positions.all %}
+
+            {% mvwith obj.dict_custom_factor_cost_prop_menurecipe as mrec_prop_cust %}
+            {% mvwith obj.dict_default_factor_cost_prop_menurecipe as mrec_prop_def %}
+            <div class="row">
+                <!-- S.No -->
+                <div class="col-xs-1" style="width:70px">{{ forloop.counter }}</b></div>
+                
+                <!-- Recipe Name -->
+                <div class="col-xs-1" style="width:200px">{{ obj.menurecipe.name }}</div>
+                
+                <!-- Persons -->
+                <div class="col-xs-1" style="width:90px">{{ obj.persons|floatformat:0 }}</div>
+
+                <!-- Qty per persons -->
+                <div class="col-xs-1" style="width:150px">{{ mrec_prop_def.consumption|floatformat:0 }} {{ mrec_prop_def.consumption_unit  }}/p</div>
+                
+                <!-- Factor Basic Total Qty -->
+                <div class="col-xs-1" style="width:100px"> {{ mrec_prop_def.factor_basic_qty|floatformat:0  }} {{ mrec_prop_def.factor_basic_unit }}  </div>
+                
+                <!-- Factor Bulk Total Qty -->
+                <div class="col-xs-1" style="width:100px"> {{ mrec_prop_def.fact_bulk_qty|floatformat:2  }} {{ mrec_prop_def.fact_bulk_unit }}</div>
+
+                <!-- Yeild Bulk Total Qty -->
+                <div class="col-xs-1" style="width:100px"> {{ mrec_prop_def.bulk_qty|floatformat:2  }} {{ mrec_prop_def.bulk_unit }}</div>
+
+                <!-- factor -->
+                <div class="col-xs-1" style="width:100px"> {{ mrec_prop_def.factor|floatformat:2 }} </div>
+
+                <!-- Default Cost -->
+                <!-- Cost per Unit -->
+                <div class="col-xs-1" style="width:150px"> Rs {{ mrec_prop_def.cost_per_basic_unit|floatformat:4 }} / {{ mrec_prop_def.basic_unit }}</div>
+                <!-- Total cost -->
+                <div class="col-xs-1" style="width:150px">Rs {{ mrec_prop_def.fact_total_cost|floatformat:2  }} </div>
+                <!-- Cost per person -->
+                <div class="col-xs-1" style="width:150px">Rs {{ mrec_prop_def.cost_per_person|floatformat:4 }}/p </div>
+
+                <!-- Custom Cost -->
+                <!-- Cost per Unit -->
+                <div class="col-xs-1" style="width:150px"> Rs {{ mrec_prop_cust.cost_per_basic_unit|floatformat:4 }} / {{ mrec_prop_def.basic_unit }}</div>
+                <!-- Total cost -->
+                <div class="col-xs-1" style="width:150px">Rs {{ mrec_prop_cust.fact_total_cost|floatformat:2  }} </div>
+                <!-- Cost per person -->
+                <div class="col-xs-1" style="width:150px">Rs {{ mrec_prop_cust.cost_per_person|floatformat:4 }}/p </div>
+
+            </div>
+            {% endfor %}
+
+            </div>
+    </div>
+
+<hr/>
+{% endfor %}
+</div>
+<div class="container">
+<div class="pagination">
+    <span class="step-links">
+        {% if object_list.has_previous %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+        </span>
+
+        {% if object_list.has_next %}
+            <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+{% endblock content %}

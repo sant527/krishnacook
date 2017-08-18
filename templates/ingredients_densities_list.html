@@ -1,0 +1,53 @@
+
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}
+{% block content %}
+
+<div class='container'>
+    <h1> Ingredients with Densities Needed </h1>
+</div>
+
+<div class="container">
+	<div class="col-sm-12">
+	   <table class="table table-striped">
+		    <thead>
+		      <tr>
+		        <th>S.No</th>
+		        <th>Ingredient</th>
+		        <th>Rate</th>
+		        <th>Density Factor</th>
+		        <th>kg/ltr</th>
+		        <th></th>
+		        <th>pcs/kg</th>
+		        <th></th>
+		        <th>pcs/ltr</th>
+		        <th></th>
+		        <th>TypeOfIngredient</th>
+		      </tr>
+		    </thead>
+		    <tbody>
+	    	{% for ingredient in ingredients %}
+	      	<tr>
+				<td>{{ forloop.counter }}/ {{ ingredient.id  }}</td>
+				<td>{{ ingredient.name }}</td>
+				<td>{{ ingredient.rate }}</td>
+				{% ingredient_qty_rate_cost_default_ingredient_all_recipes ingredient as ingr_prop %}
+				<td>{{ ingr_prop.density_fact }}</td>
+				<td>{{ ingredient.density_kg_per_lt }}</td>
+				<td>kg/ltr</td>
+				<td>{{ ingredient.density_pcs_per_kg }}</td>
+				<td>pcs/kg</td>
+				<td>{{ ingredient.density_pcs_per_lt }}</td>
+				<td>pcs/ltr</td>
+				<td>{{ ingrdient.typeofingredient }}</td>
+	      	</tr>
+	    	{% endfor %}
+		    </tbody>
+
+		</table>
+	</div>
+</div>
+
+{% endblock content %}
+

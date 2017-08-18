@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div class='container'>
+    <h1> {{ instance.name }}</h1>
+
+    <hr/>
+    <div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 3000px;">
+        <div class="row simhaf">
+            <div class="col-xs-1" style="width:150px"><b>Name</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Edit</b></div>
+            <div class="col-xs-1" style="width:120px"><b>Id</b></div>
+            <div class="col-xs-1" style="width:80px"><b>No: of Ingredients</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Bulk Quantity (eg: tubs, cups)</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Bulk Quantity in (kg,lt,pcs)</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Total Cost of all ingredients</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Cost/Bulk Unit</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Cost/Basic Unit</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Up Date</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Cr Date</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Primary Unit</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Bulk Units</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Slug</b></div>
+            <div class="col-xs-1" style="width:150px"><b>Tags</b></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-1 simha" style="width:150px"><b>{{ instance.name }}</b></div>
+            <div class="col-xs-1 simha" style="width:150px"><b><a href='{{ instance.get_absolute_url_update }}'>Edit :: </a></b><b><a href='{{ instance.get_absolute_url_confirm }}'>Delete</a></b></div>
+            <div class="col-xs-1 simha" style="width:120px">{{ instance.id }}</div>
+            <div class="col-xs-1 simha" style="width:80px">{{ instance.recipe_positions.count }}</div>
+            <div class="col-xs-1 simha" style="width:150px">
+                {% if instance.mass_unit %}{{ instance.mass_quantity|floatformat:2 }} - {{ instance.mass_unit.slug }}{% else %}{% endif %}<br>
+                {% if instance.volume_unit %}{{ instance.volume_quantity|floatformat:2 }} - {{ instance.volume_unit.slug }}{% else %}{% endif %}<br>
+                {% if instance.pieces_unit %}{{ instance.pieces_quantity|floatformat:2 }} - {{ instance.pieces_unit.slug }}{% else %}{% endif %}<br>
+            </div>
+            <div class="col-xs-1 simha" style="width:150px">
+                {{ instance.get_Mass_quantity|floatformat:2 }} - kg<br>
+                {{ instance.get_Volume_quantity|floatformat:2 }} - ltr<br>
+                {{ instance.get_Pieces_quantity|floatformat:2 }} - pcs<br>
+            </div>
+            <div class="col-xs-1 simha" style="width:150px">Rs {{  instance.get_cost_of_the_recipe|floatformat:2 }}</div>
+            <div class="col-xs-1 simha" style="width:150px">
+                {% if instance.mass_unit %}Rs {{ instance.get_cost_of_the_recipe_per_bulk_unit_mass|floatformat:2 }}/{{ instance.mass_unit.slug }}{% else %}{% endif %}<br>
+                {% if instance.volume_unit %}Rs {{ instance.get_cost_of_the_recipe_per_bulk_unit_volume|floatformat:2 }}/{{ instance.volume_unit.slug }}{% else %}{% endif %}<br>
+                {% if instance.pieces_unit %}Rs {{ instance.get_cost_of_the_recipe_per_bulk_unit_pieces|floatformat:2 }}/{{ instance.pieces_unit.slug }}{% else %}{% endif %}<br>
+            </div>
+            <div class="col-xs-1 simha" style="width:150px">
+                {% if instance.mass_unit %}Rs {{ instance.get_cost_of_the_recipe_per_unit_mass|floatformat:2 }}/kg{% else %}{% endif %}<br>
+                {% if instance.volume_unit %}Rs {{ instance.get_cost_of_the_recipe_per_unit_volume|floatformat:2 }}/ltr{% else %}{% endif %}<br>
+                {% if instance.pieces_unit %}Rs {{ instance.get_cost_of_the_recipe_per_unit_pieces|floatformat:2 }}/pcs{% else %}{% endif %}<br>
+            </div>
+            <div class="col-xs-1 simha" style="width:150px">{{ instance.updated }}</div>
+            <div class="col-xs-1 simha" style="width:150px">{{ instance.timestamp }}</div>
+            <div class="col-xs-1 simha" style="width:150px">{{ instance.primary_unit }}</div>
+            <div class="col-xs-1 simha" style="width:150px">
+               {% if instance.mass_unit %}{{ instance.mass_unit.slug }}{% else %}{% endif %}<br>
+               {% if instance.volume_unit %}{{ instance.volume_unit.slug }}{% else %}{% endif %}<br>
+               {% if instance.pieces_unit %}{{ instance.pieces_unit.slug }}{% else %}{% endif %}<br>
+           </div>
+           <div class="col-xs-1 simha" style="width:150px">{{ instance.slug }}</div>
+           <div class="col-xs-1 simha" style="width:150px">
+            {% for tag in instance.tags.all %}
+            - {{ tag.name }}<br>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "messages_display.html" %}
+
+{% crispy form %}
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 3000px;">
+    <hr/>
+    <div class="row simhaf">
+        <div class="col-xs-1" style="width:100px"><b>S.No</b></div>
+        <div class="col-xs-1" style="width:100px"><b>Id</b></div>
+        <div class="col-xs-1" style="width:150px"><b>Edit/Delete</b></div>
+        <div class="col-xs-1" style="width:150px">IngredientName</div>
+        <div class="col-xs-1" style="width:150px">Bulk Quantity</div>
+        <div class="col-xs-1" style="width:150px">Quantity in (kg,lt,pcs)</div>
+        <div class="col-xs-1" style="width:150px">Cost Quantity</div>
+        <div class="col-xs-1" style="width:150px">Rate</div>
+        <div class="col-xs-1" style="width:150px">Cost</div>
+        <div class="col-xs-1" style="width:150px">IngredientType</div>
+        <div class="col-xs-1" style="width:150px">Updated</div>
+        <div class="col-xs-1" style="width:150px">Timestamp</div>
+        <div class="col-xs-1" style="width:150px">Slug</div>
+        <div class="col-xs-1" style="width:150px">Ingredient density (Kg/Lt)</div>
+        <div class="col-xs-1" style="width:150px">Cost Munit</div>
+        <div class="col-xs-1" style="width:150px">Bulk Units</div>
+        <div class="col-xs-1" style="width:150px">Recipe</div>
+    </div>
+    <hr/>
+
+    {% for obj in object_list %}
+    <div class="row" id="{{ obj.recipeposition_slug }}">
+        <div class="col-xs-1 simha" style="width:100px">{{ forloop.counter }}</div>
+        <div class="col-xs-1 simha" style="width:100px">{{ obj.id }}</div>
+        <div class="col-xs-1 simha" style="width:150px"><b><a href='{{ obj.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}'>Edit</a></b>/<b><a href='{{ obj.get_absolute_url_confirm }}'>Delete</a></b></div>
+
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.ingredient.name }}<br>{{ obj.name  }}<br>{% if obj.cooking_notes %}     ---> {{ obj.cooking_notes }} {% endif %}</div>
+        <div class="col-xs-1 simha" style="width:150px">
+            {% if obj.mass_unit %}{{ obj.mass_quantity|floatformat:2 }} - {{ obj.mass_unit.slug }}{% else %}{% endif %}<br>
+            {% if obj.volume_unit %}{{ obj.volume_quantity|floatformat:2 }} - {{ obj.volume_unit.slug }}{% else %}{% endif %}<br>
+            {% if obj.pieces_unit %}{{ obj.pieces_quantity|floatformat:2 }} - {{ obj.pieces_unit.slug }}{% else %}{% endif %}<br>
+        </div>
+        <div class="col-xs-1 simha" style="width:150px">
+            {{ obj.get_Mass_quantity|floatformat:2 }} - kg<br>
+            {{ obj.get_Volume_quantity|floatformat:2 }} - ltr<br>
+            {{ obj.get_Pieces_quantity|floatformat:2 }} - pcs<br>
+        </div>
+        <div class="col-xs-1 simha" style="width:150px"> {{ obj.get_cost_quantity|floatformat:2 }} - {{ obj.ingredient.munit }} </div>
+        <div class="col-xs-1 simha" style="width:150px">Rs {{ obj.ingredient.rate|floatformat:2 }}/{{ obj.ingredient.munit }}</div>
+        <div class="col-xs-1 simha" style="width:150px">Rs {{ obj.get_total_cost|floatformat:2 }}</div>
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.ingredient.typeofingredient.name }}</div>
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.updated }}</div>
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.timestamp }}</div>
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.recipeposition_slug }}</div>
+
+        <div class="col-xs-1 simha" style="width:150px">
+            - {{ obj.density_kg_per_lt|floatformat:2 }} kg/lt <br>
+            - {{ obj.density_kg_per_pcs|floatformat:2 }} kg/pcs <br>
+            - {{ obj.density_pcs_per_lt|floatformat:2 }} pcs/lt <br>
+        </div>
+        <div class="col-xs-1 simha" style="width:150px">{{ obj.ingredient.munit }}</div>
+        <div class="col-xs-1 simha" style="width:150px">
+           {% if obj.mass_unit %}{{ obj.mass_unit.slug }}{% else %}{% endif %}<br>
+           {% if obj.volume_unit %}{{ obj.volume_unit.slug }}{% else %}{% endif %}<br>
+           {% if obj.pieces_unit %}{{ obj.pieces_unit.slug }}{% else %}{% endif %}<br>
+        </div>
+       <div class="col-xs-1 simha" style="width:150px">{{ obj.recipe }}</div>
+   </div>
+   <hr/>
+   {% endfor %}
+</div>
+
+{% endblock content %}

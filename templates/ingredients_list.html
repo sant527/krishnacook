@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}  
+
+{% block detail_link %}
+<li><a href='{% url "ingredients:list" %}'>Ingredients</a></li>
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+	<div class="row">
+		<div class="col-xs-12">
+			<form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                {% if key != "q" and key != "page" %}
+                <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='q' placeholder='Search' value='{{ request.GET.q }}'/>
+                <input type='submit' value='Search' />
+            </form>
+        </div>
+    </div>
+    {% crispy form %}
+</div>
+<hr/>
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+            {% urlparams request "page"  as new %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+             Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+         </span>
+
+         {% if object_list.has_next %}
+         {% urlparams request "page"  as new %}
+         <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}">next</a>
+         {% endif %}
+     </span>
+ </div>
+ <div class="row">
+    <div class="col-xs-10">
+        Change Items per page. Current::{{ object_list.object_list|length }}
+        <form method='GET' action=''>
+            {% for key, value in request.GET.items %}
+            {% if key != "count" and key != "page" %}
+            <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+            {% endif %}
+            {% endfor %}<br>
+            <input type='text' name='count' placeholder='per page'/>
+            <input type='submit' value='submit' />
+        </form>
+    </div>
+</div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=type{{ new }}"> Type </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=-name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=-id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=-date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=-type{{ new }}"> Type </a> </b>
+    </div>
+</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1780px;">
+    <div class="row simhaf">
+     <div class="col-xs-1" style="width:100px"><b>S.No/Id</b></div>
+     <div class="col-xs-1" style="width:180px"><b>Name</b></div>
+     <div class="col-xs-1" style="width:70px"><b>M Unit</b></div>
+     <div class="col-xs-1" style="width:100px"><b>Rate</b></div>
+     <div class="col-xs-1" style="width:150px"><b>Type of Ingredient</b></div>
+     <div class="col-xs-1" style="width:150px"><b>Density</b></div>
+     <div class="col-xs-1" style="width:195px"><b>Up Date</b></div>
+     <div class="col-xs-1" style="width:195px"><b>Cr Date</b></div>
+     <div class="col-xs-1" style="width:150px"><b>Delete</b></div>
+     <div class="col-xs-1" style="width:180px"><b>Slug</b></div>
+ </div>
+ <hr/>
+ {% for obj in object_list %}
+<div class="row">
+    <div class="col-xs-1 simha" style="width:100px;border-top:1.5px solid;">{{ object_list.start_index|add:forloop.counter|add:"-1" }}::{{ obj.id }}</div>
+    <div class="col-xs-1 simha" style="width:180px;border-top:1.5px solid;"><b><a href='{{ obj.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}'>{{ obj.name }}</a></b></div>
+    <div class="col-xs-1 simha" style="width:70px;border-top:1.5px solid;text-align:center">{{ obj.munit }}</div>
+    <div class="col-xs-1 simha" style="width:100px;border-top:1.5px solid;">{{ obj.rate }}/{{ obj.munit }}</div>
+    <div class="col-xs-1 simha" style="width:150px;border-top:1.5px solid;text-align:center">{{ obj.typeofingredient }}</div>
+    <div class="col-xs-1 simha" style="width:150px;border-top:1.5px solid;">
+        {% if obj.density_kg_per_lt > 0 %} - {{ obj.density_kg_per_lt }} kg/lt <br>{% endif %}
+        {% if obj.density_pcs_per_kg > 0 %} - {{ obj.density_pcs_per_kg }} kg/pcs <br>{% endif %} 
+        {% if obj.density_pcs_per_lt > 0 %}- {{ obj.density_pcs_per_lt }} pcs/lt <br>{% endif %} 
+    </div>
+    <div class="col-xs-1 simha" style="width:195px;border-top:1.5px solid;">{{ obj.updated }}</div>
+    <div class="col-xs-1 simha" style="width:195px;border-top:1.5px solid;">{{ obj.timestamp }}</div>
+    <div class="col-xs-1 simha" style="width:150px;border-top:1.5px solid;"><b><a href='{{ obj.get_absolute_url_confirm }}'>Delete</a></b></div>
+    <div class="col-xs-1 simha" style="width:180px;border-top:1.5px solid;">{{ obj.slug }}</div>
+</div>
+{% endfor %}
+</div>
+
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+            {% urlparams request "page"  as new %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+             Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+         </span>
+
+         {% if object_list.has_next %}
+         {% urlparams request "page"  as new %}
+         <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}">next</a>
+         {% endif %}
+     </span>
+ </div>
+ <div class="row">
+    <div class="col-xs-10">
+        Change Items per page. Current::{{ object_list.object_list|length }}
+        <form method='GET' action=''>
+            {% for key, value in request.GET.items %}
+            {% if key != "count" and key != "page" %}
+            <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+            {% endif %}
+            {% endfor %}<br>
+            <input type='text' name='count' placeholder='per page'/>
+            <input type='submit' value='submit' />
+        </form>
+    </div>
+</div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=type{{ new }}"> Type </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "sort" as new %}
+        :: <b> <a href="?sort=-name{{ new }}"> Name</a> </b>
+        :: <b> <a href="?sort=-id{{ new }}"> Id</a> </b>  
+        :: <b> <a href="?sort=-date{{ new }}"> Date </a> </b>
+        :: <b> <a href="?sort=-type{{ new }}"> Type </a> </b>
+    </div>
+</div>
+{% endblock content %}

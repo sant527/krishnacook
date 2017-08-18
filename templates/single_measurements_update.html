@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{% url "singlemeasurements:list" %}'>Measurements</a></li>
+{% endblock %}
+
+
+{% block content %}
+<div class='container'>
+<div class="row">
+<div class="col-xs-9 col-xs-offset-3">
+<form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+{{ form|crispy }}
+<div class="col-xs-2"><input type='submit' class='btn btn-default' value='Update' /></div>
+</form>
+</div>
+</div>
+</div>
+{% endblock content %}

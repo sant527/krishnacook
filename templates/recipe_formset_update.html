@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}  
+
+{% block detail_link %}
+  <li><a href='{% url "recipes:formsetedit" %}'>Recipes Bulk Edit</a></li>
+{% endblock %}
+
+{% block content %}
+
+<div class='container'>
+    <div class="row">
+        <div class="col-xs-12">
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "q" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='q' placeholder='Search' value='{{ request.GET.q }}'/>
+                <input type='submit' value='Search' />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+            {% urlparams request "page"  as new %}
+               <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}
+                ">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+            {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}
+                ">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ count }}
+            <!-- MYSQL PROBLEM-->
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "count" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "item1" "sort1" "page" as new %}
+        :: <b> <a href="?item1=recipe&sort1=name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=updated{{ new }}"> Update Date </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "item1" "sort1"  "page"  as new %}
+        :: <b> <a href="?item1=recipe&sort1=-name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=-updated{{ new }}"> Update Date </a> </b>
+    </div>
+</div>
+
+<div class="container">
+    <div class="alert alert-warning" role="alert">
+      <strong>Warning!</strong> If you delete a Recipe all its ingredients details will also be deleted.</a>
+    </div>
+</div>
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 5500px;">
+    {% crispy formset helper %}
+</div>
+
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+                <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ object_list.object_list|length }}
+            <form method='GET' action=''>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

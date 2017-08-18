@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}  
+
+{% block content %}
+<div class='container'>
+    <div class="row">
+        <div class="col-xs-12">
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "q" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='q' placeholder='Search' value='{{ request.GET.q }}'/>
+                <input type='submit' value='Search' />
+            </form>
+        </div>
+    </div>
+    {% crispy form %}
+<hr/>
+</div>
+
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+            {% urlparams request "page"  as new %}
+               <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}
+                ">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+            {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}
+                ">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ count }}
+            <!-- MYSQL PROBLEM-->
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "count" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "item1" "sort1" "page" as new %}
+        :: <b> <a href="?item1=recipe&sort1=name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=updated{{ new }}"> Update Date </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost{{ new }}"> Total Cost </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_liter{{ new }}"> Cost/liter </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_kg{{ new }}"> Cost/kg </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_pcs{{ new }}"> Cost/pcs </a> </b>
+        {% urlparams request "item2" "sort2" "page" as new %}
+        :: <b> <a href="?item2=recipeposition&sort2=name{{ new }}"> Ingr Name1 </a> </b>
+        :: <b> <a href="?item2=ingredient&sort2=name{{ new }}"> Ingr Name2 </a> </b>
+        :: <b> <a href="?item2=recipeposition&sort2=sequence_number{{ new }}"> Ingr Sequence </a> </b>
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "item1" "sort1"  "page"  as new %}
+        :: <b> <a href="?item1=recipe&sort1=-name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=-updated{{ new }}"> Update Date </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost{{ new }}"> Total Cost </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_liter{{ new }}"> Cost/liter </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_kg{{ new }}"> Cost/kg </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_pcs{{ new }}"> Cost/pcs </a> </b>
+        {% urlparams request "item2" "sort2"  "page"  as new %}
+        :: <b> <a href="?item2=recipeposition&sort2=-name{{ new }}"> Ingr Name1 </a> </b>
+        :: <b> <a href="?item2=ingredient&sort2=-name{{ new }}"> Ingr Name2 </a> </b>
+        :: <b> <a href="?item2=recipeposition&sort2=-sequence_number{{ new }}"> Ingr Sequence </a> </b>
+    </div>
+</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1700px;">
+    <div class="row simhaf">
+        <div class="col-xs-1" style="width:110px"><b>S.No/Id</b></div>
+        <div class="col-xs-1" style="width:270px">
+            <b>Name/Edit</b><br>
+            D-Updated;Y-Yeild;<br>
+            C-Cost;C/U-Cost/Unit
+        </div>
+        <div class="col-xs-1"  style="width:120px">Tags</div>
+        <div class="col-xs-1" style="width:1050px">
+            <div class="row" style="text-align:center;border-bottom: solid 1px;"> 
+                <b>Ingredients</b><br> 
+            </div>
+            <div class="row">
+                <div class="col-xs-1" style="width:90px"> Sr.No(Sq.No) </div>
+                <div class="col-xs-1" style="width:250px;text-align:right"> Ingredient Name2 </div>
+                <div class="col-xs-1" style="width:120px">Quantity</div>
+                <div class="col-xs-1" style="width:100px;text-align:center">Density Factor</div>
+                <div class="col-xs-1" style="width:130px">Rate</div>
+                <div class="col-xs-1" style="width:270px"> Ingredient Name1</div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+
+    {% for obj in object_list %}
+
+    <div class="row" id ="{{ obj.name }}-{{ obj.id }}">
+        <div class="col-xs-1 simha" style="width:110px">{{ object_list.start_index|add:forloop.counter|add:"-1" }}::{{ obj.id }}</div>
+        <div class="col-xs-1 simha" style="width:270px">
+
+            <!-- recipe edit -->
+            <b><a href='{{ obj.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}#{{ obj.name }}-{{ obj.id }}'>Edit</a></b> :: 
+
+            <!-- recipe detail -->
+            <b><a href='{{ obj.get_absolute_url_detail }}'>{{ obj.name }}</a></b> :: 
+            
+            <!-- recipe ingredients bulk edit -->
+            <b><a href='{{ obj.get_absolute_url_recipe_update_inline_bulk_ingredients }}?next={{ request.get_full_path|urlencode }}#{{ obj.name }}-{{ obj.id }}'>Edit_Formula</a></b> ::
+
+            <b><a href='{{ obj.get_absolute_url_ing_recipe_upd }}?next={{ request.get_full_path|urlencode }}'>Edit_Ingr</a><b>
+            <br>
+            
+            <!-- updated -->
+            <li style="list-style-position: outside;">
+            D: {{ obj.updated }}
+            </li>
+
+            <!-- Yield Quantity -->
+            <li style="list-style-position: outside;">
+                {% mvwith obj.list_total_factor_qty_unit_bulk_and_kg_ltr_pcs_recipe as qty_list %}
+                {% for var in qty_list %}
+                    {% if var.unit_exists == 1 %}
+                        Y: {{ var.bulk.quantity|floatformat:2 }} {{ var.bulk.unit }}
+                        {% if var.not_same != 0 %}
+                             = {{ var.basic.quantity|floatformat:2 }} {{ var.basic.unit }}
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                {% endfor %}
+            </li>
+
+
+            <!-- Total Cost -->
+            <li style="list-style-position: outside;">
+            C: Rs {{  obj.dict_total_and_fact_cost_recipe.total_cost|floatformat:2 }}<br>
+            </li>
+
+            <!-- Cost per Unit -->
+            <li style="list-style-position: outside;">
+                {% mvwith obj.list_cost_per_bulk_units_and_kg_ltr_pcs_recipe as cost_list %}
+                {% for var in cost_list %}
+                    {% if var.unit_exists == 1 %}
+                        C/U: Rs {{ var.bulk.cost|floatformat:2 }} / {{ var.bulk.unit }}
+                        {% if var.not_same != 0 %}
+                             = {{ var.basic.cost|floatformat:2 }} / {{ var.basic.unit }}
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                {% endfor %}
+            </li>
+            
+        </div>
+
+        <div class="col-xs-1 simha"  style="width:120px">
+            <!-- Tags: -->
+            {% if obj.tags.all.exists %}
+            <li style="list-style-position: outside;">
+                {% for tag in obj.tags.all %}
+                    {{ tag.name }};<br>
+                {% endfor %}
+            </li>
+            {% endif %}
+        </div>
+
+
+        <div class="col-xs-1 simha" style="width:1050px">
+            {% for recipeposition in obj.recipe_positions.all %}
+            <!-- Title -->
+            {% if recipeposition.title %}
+            <div class="row">
+                <div class="col-xs-1 simha" style="width:300px;padding-top:20px"> 
+                      <b>{{ recipeposition.title }}</b> 
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row">
+
+                <!-- Sr No and Sq No -->
+                <div class="col-xs-1 simha" style="width:90px"> 
+                     {{ forloop.counter }}({{ recipeposition.sequence_number }})
+                </div>
+
+
+                <!-- Ingredient Descriptive Name -->
+                <div class="col-xs-1 simha" style="width:250px;text-align:right"> 
+                     {{ recipeposition.cooking_notes }} :: <a href='{{ obj.get_absolute_url_detail }}#{{  recipeposition.recipeposition_slug }}'>{{ recipeposition.name }}</a>
+                </div>
+
+                <!-- quantity -->
+                <div class="col-xs-1 simha" style="width:120px">
+                    <li style="list-style-position: outside;">
+                        {% mvwith recipeposition.list_factor_qty_unit_bulk_and_kg_ltr_pcs_list_recipeposition as rcplist%}
+                        {% for var in rcplist %}
+                            {% if var.unit_exists == 1 %}
+                                {{ var.bulk.quantity|floatformat:2 }} {{ var.bulk.unit }}<br>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
+                </div>
+
+                 <!-- Density -->
+                {% mvwith recipeposition.dict_factor_density_cost_default_ing_recipeposition as rcpdict %}
+                <div class="col-xs-1 simha" style="width:100px;text-align:center"> 
+                     {{ rcpdict.inverse }}{{ rcpdict.density_factor }} {{ rcpdict.density_unit }}
+                </div>
+
+                 <!-- Rate --> 
+                  <div class="col-xs-1 simha" style="width:130px"> 
+                     Rs {{ recipeposition.ingredient.rate }}/{{ recipeposition.ingredient.munit }}
+                </div>
+
+
+                <!-- Ingredient Name --> 
+                <div class="col-xs-1 simha" style="width:270px"> 
+                    :: <a href='{{ recipeposition.ingredient.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}#{{ obj.name }}-{{ obj.id }}'>{{ recipeposition.ingredient.name }} </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+<hr/>
+{% endfor %}
+</div>
+
+
+<div class='container'>
+
+    <div class="pagination">
+        Showing {{ object_list.start_index }} to  {{ object_list.end_index }} of {{ object_list.paginator.count }} <br>
+        <span class="step-links">
+            {% if object_list.has_previous %}
+            {% urlparams request "page"  as new %}
+               <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{{ new }}
+                ">previous</a>
+            {% endif %}
+
+            <span class="current">
+                 Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+            </span>
+
+            {% if object_list.has_next %}
+            {% urlparams request "page"  as new %}
+                <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{{ new }}
+                ">next</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            Change Items per page. Current::{{ count }}
+            <!-- MYSQL PROBLEM-->
+            <form method='GET' action=''>
+                {% for key, value in request.GET.items %}
+                    {% if key != "count" and key != "page" %}
+                        <input  type="hidden" name='{{ key }}' value='{{ value }}'/><br>
+                    {% endif %}
+                {% endfor %}<br>
+                <input type='text' name='count' placeholder='per page'/>
+                <input type='submit' value='submit' />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <b> Sort By</b>
+    <div class="row">
+        Asc
+        {% urlparams request "item1" "sort1"  "page"  as new %}
+        :: <b> <a href="?item1=recipe&sort1=name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=updated{{ new }}"> Update Date </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost{{ new }}"> Total Cost </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_liter{{ new }}"> Cost/liter </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_kg{{ new }}"> Cost/kg </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=cost_pcs{{ new }}"> Cost/pcs </a> </b>
+        {% urlparams request "item2" "sort2"  "page"  as new %}
+        :: <b> <a href="?item2=recipeposition&sort2=name{{ new }}"> Ingr Name1 </a> </b>
+        :: <b> <a href="?item2=ingredient&sort2=name{{ new }}"> Ingr Name2 </a> </b>
+        :: <b> <a href="?item2=recipeposition&sort2=sequence_number{{ new }}"> Ingr Sequence </a> </b>
+
+    </div>
+    <div class="row">
+        Desc
+        {% urlparams request "item1" "sort1"  "page"  as new %}
+        :: <b> <a href="?item1=recipe&sort1=-name{{ new }}"> Recipe Name</a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-id{{ new }}"> Recipe Id</a> </b>  
+        :: <b> <a href="?item1=recipe&sort1=-updated{{ new }}"> Update Date </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost{{ new }}"> Total Cost </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_liter{{ new }}"> Cost/liter </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_kg{{ new }}"> Cost/kg </a> </b>
+        :: <b> <a href="?item1=recipe&sort1=-cost_pcs{{ new }}"> Cost/pcs </a> </b>
+        {% urlparams request "item2" "sort2"  "page"  as new %}
+        :: <b> <a href="?item2=recipeposition&sort2=-name{{ new }}"> Ingr Name1 </a> </b>
+        :: <b> <a href="?item2=ingredient&sort2=-name{{ new }}"> Ingr Name2 </a> </b>
+        :: <b> <a href="?item2=recipeposition&sort2=-sequence_number{{ new }}"> Ingr Sequence </a> </b>
+    </div>
+</div>
+
+{% endblock content %}

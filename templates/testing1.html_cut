@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 5000px;">
+{% for obj in object_list %}
+	<div class="row">
+			<!-- S.No -->
+			<div class="col-xs-1 simha" style="width:50px">{{ object_list.start_index|add:forloop.counter|add:"-1" }}</div>
+
+			<!-- Recipe Id -->
+			<div class="col-xs-1 simha" style="width:50px">{{ obj.id }}</div>
+
+			<!-- Recipe Name and the Link -->
+			<div class="col-xs-1 simha" style="width:200px"><b><a href='{{ obj.get_absolute_url_detail }}'>{{ obj.name }}</a></b> :: <b><a href='{{ obj.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}'>Edit</a></b><br>
+			</div>
+
+			<!-- The Ingredient Details of the Recipe -->
+			<div class="col-xs-1 simha" style="width:880px">
+			{% for recipeposition in obj.recipe_positions.all %}
+				
+				<div class="row">
+
+	                <!-- Ingredient Name --> 
+	                <div class="col-xs-1 simha" style="width:400px"> :: {{ recipeposition.ingredient.name }} = Rs {{ recipeposition.ingredient.rate }}/{{ recipeposition.ingredient.munit }} = {{ recipeposition.ingredient.density_kg_per_lt }} kg/lt :: <a href='{{ recipeposition.ingredient.get_absolute_url_update }}?next={{ request.get_full_path|urlencode }}'>Edit</a></div>
+	            
+	            	<!-- Ingredient Descriptive Name -->
+	                <div class="col-xs-1 simha" style="width:220px"> :: <a href='{{ obj.get_absolute_url_detail }}#{{  recipeposition.recipeposition_slug }}'>{{ recipeposition.name }}</a></div>
+				
+				</div>
+			
+			{% endfor %}
+			</div>
+	</div>
+{% endfor %}
+</div>
+
+{% endblock content %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{% url "ingredients:formsetcreate" %}'>Ingredients Bulk Create</a></li>
+{% endblock %}
+
+
+{% block content %}
+    {% include "messages_display.html" %}
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1500px;">
+        <div class="row" style="border-top:1px solid;padding-top:20px">
+            <div class="col-xs-2" style='width:100px;text-align:center'>S.No</div>
+            <div class="col-xs-2" style='width:250px;text-align:center'>Ingredient</div>
+            <div class="col-xs-2" style='width:150px;text-align:center'>MUnit</div>
+            <div class="col-xs-2" style='width:160px;text-align:center'>Rate</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>Type of Ingr</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>kg/ltr</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>pcs/kg</div>
+            <div class="col-xs-2" style='width:120px;text-align:center'>pcs/ltr</div>
+        </div>
+    {% crispy formset helper %}
+</div>
+
+{% endblock content %}

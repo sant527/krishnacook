@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load ingredient_quantity %}  
+
+{% block content %}
+<div class='container'>
+	{% crispy form %}
+</div>
+
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <h3> Add/Edit New Recipes</h3>
+        <div class="clearfix">
+            <div class="col-xs-4">
+                <div class="clearfix">
+                	{{ form.name|as_crispy_field }}
+                </div>
+                <div class="clearfix">
+                	{{ form.tags|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-xs-8">
+                <h4 style="text-align:center;background-color: antiquewhite">Atlease one Unit should be entered</h4>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+                    	{{ form.volume_unit|as_crispy_field }}
+                    </div>
+                    <div class="clearfix">
+                      	{{ form.volume_quantity|as_crispy_field }}
+                    </div>
+
+                </div>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+                      	{{ form.mass_unit|as_crispy_field }}
+                    </div>
+                    <div class="clearfix">
+                     	{{ form.mass_quantity|as_crispy_field }}
+                    </div>
+
+                </div>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+        			  	{{ form.pieces_unit|as_crispy_field }}
+                    </div>
+                    <div class="clearfix">
+                       	{{ form.pieces_quantity|as_crispy_field }}
+                    </div>
+
+                </div>
+                <input name="next" value="" type="hidden">
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="controls ">
+                <input name="save" value="Submit" class="btn btn-primary" id="submit-id-save" type="submit"> </div>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <h3> Add/Edit New Recipes</h3>
+        <div class="clearfix">
+            <div class="col-xs-4">
+                <div class="clearfix">
+                	{{ form.name|as_crispy_field }}
+                </div>
+                <div class="clearfix">
+                	{{ form.tags|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-xs-8">
+                <h4 style="text-align:center;background-color: antiquewhite">Atlease one Unit should be entered</h4>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+                    	{{ form.volume_unit|as_crispy_field }}
+                    </div>
+                    <div class="clearfix">
+                      	{{ form.volume_quantity|as_crispy_field }}
+                    </div>
+
+                </div>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+                      	{{ form.mass_unit|as_crispy_field }}
+                    </div>
+                    <div class="clearfix">
+                        {% if form.mass_quantity.errors %}
+                            <ol>
+                                {% for error in form.mass_quantity.errors %}
+                                    <li><strong>{{ error|escape }}</strong></li>
+                                {% endfor %}
+                            </ol>
+                        {% endif %}
+                     	{{ form.mass_quantity}}
+                    </div>
+
+                </div>
+                <div class="col-xs-4">
+                    <div class="clearfix">
+                        {% if form.pieces_unit.errors %}
+                            <ol>
+                                {% for error in form.pieces_unit.errors %}
+                                    <li><strong>{{ error|escape }}</strong></li>
+                                {% endfor %}
+                            </ol>
+                        {% endif %}
+		                {{ form.pieces_unit.label_tag }}
+		                {{ form.pieces_unit }}
+                    </div>
+                    <div class="clearfix">
+                        {% if form.pieces_quantity.errors %}
+                            <ol>
+                                {% for error in form.pieces_quantity.errors %}
+                                    <li><strong>{{ error|escape }}</strong></li>
+                                {% endfor %}
+                            </ol>
+                        {% endif %}
+		                {{ form.pieces_quantity.label_tag }}
+		                {{ form.pieces_quantity }}
+                    </div>
+
+                </div>
+                <input name="next" value="" type="hidden">
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="controls ">
+                <input name="save" value="Submit" class="btn btn-primary" id="submit-id-save" type="submit"> </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}

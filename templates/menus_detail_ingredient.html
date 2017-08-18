@@ -1,0 +1,740 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% load ingredient_quantity %}
+
+ {% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Events</a></li>
+  <li><a href='{{ instance.get_absolute_url_detail }}'>{{ instance.name }}</a></li>
+{% endblock %}
+
+
+{% block content %}
+
+	 <div class="container">
+	<h3> {{ instance.name }}</h1><br>
+	<b><a href='{{ instance.get_absolute_url_report }}'>Report</a></b>
+	<b><a href='{{ instance.get_absolute_url_print }}'>Print</a></b>
+	</div>
+
+	<hr/>
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 900px;">
+	<div class="row simhaf">
+		<div class="col-xs-1" style="width:50px"><b>S.No</b></div>
+		<div class="col-xs-1" style="width:200px"><b>Recipes</b></div>
+		<div class="col-xs-1" style="width:130px"><b>Cost per Unit</b></div>
+		<div class="col-xs-1" style="width:70px"><b>Persons</b></div>
+		<div class="col-xs-1" style="width:100px"><b>Qty per person</b></div>
+		<div class="col-xs-1" style="width:100px"><b>Total Qty</b></div>
+		<div class="col-xs-1" style="width:100px"><b>Total Cost</b></div>
+		<div class="col-xs-1" style="width:130px"><b>Cost/person</b></div>
+	</div>
+	{% for obj in instance.menu_positions.all %}
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px">{{ forloop.counter }}</div>
+		<div class="col-xs-1 simha" style="width:200px">{{ obj.menurecipe.name }}</div>
+		<div class="col-xs-1 simha" style="width:130px">
+			Rs {{ obj.cost_per_recipe_for_the_consumption_unit_class.cost|floatformat:4 }} / {{ obj.cost_per_recipe_for_the_consumption_unit_class.unit }}
+		</div>
+		<div class="col-xs-1 simha" style="width:70px">{{ obj.persons|floatformat:0 }}</div>
+		<div class="col-xs-1 simha" style="width:100px">{{ obj.get_person_consumption_dict_single.qty|floatformat:0 }} {{ obj.get_person_consumption_dict_single.unit  }}/p</div>
+		<div class="col-xs-1 simha" style="width:100px">
+			{{ obj.total_quantity_in_kg_lt_pcs_dict_single.qty|floatformat:0  }} {{ obj.total_quantity_in_kg_lt_pcs_dict_single.unit }} 
+		</div>
+		<div class="col-xs-1 simha" style="width:100px">Rs {{ obj.total_cost_for_total_quantity_kg_lt_pc_dict_single.qty|floatformat:2  }}</div>
+		<div class="col-xs-1 simha" style="width:130px;">Rs {{ obj.total_cost_per_person_kg_lt_pc_dict_single.qty|floatformat:4 }}/p
+		</div>
+	</div>
+	{% endfor %}
+	<hr>
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px"></div>
+		<div class="col-xs-1 simha" style="width:330px">Average No: People</div>
+		<div class="col-xs-1 simha" style="width:400px">
+			({% mvwith instance.average_number_of_people_dict as menu_prop %}
+			{% for obj in instance.menu_positions.all %}
+			{{ obj.persons|floatformat:0 }} p 
+
+			{% if not forloop.last %}
+			+ 
+			{% endif %} 
+			{% endfor %}) / {{ menu_prop.countr }} = {{ menu_prop.avgp|floatformat:0 }}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px"></div>
+		<div class="col-xs-1 simha" style="width:330px">Total Cost</div>
+		<div class="col-xs-1 simha" style="width:400px">
+		{% for obj in instance.menu_positions.all %}
+		Rs {{ obj.total_cost_for_total_quantity_kg_lt_pc_dict_single.qty|floatformat:2 }}
+
+		{% if not forloop.last %}
+		+ 
+		{% endif %} 
+		{% endfor %} = 
+
+		Rs {{ menu_prop.total_cost|floatformat:2 }} 
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px"></div>
+		<div class="col-xs-1 simha" style="width:330px">Average Cost per person</div>
+		<div class="col-xs-1 simha" style="width:400px">
+			 {{ menu_prop.total_cost|floatformat:2 }} / {{ menu_prop.avgp|floatformat:2 }} = Rs {{ menu_prop.avg_cost_per_person|floatformat:2 }}/p
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px"></div>
+		<div class="col-xs-1 simha" style="width:330px">Aggregate Cost per person</div>
+		<div class="col-xs-1 simha" style="width:400px">
+		{% for obj in instance.menu_positions.all %}
+			 Rs {{ obj.total_cost_per_person_kg_lt_pc_dict_single.qty|floatformat:2 }}/p 
+			
+			 {% if not forloop.last %}
+			 + 
+			 {% endif %} 
+			 
+		 {% endfor %}
+		 =  Rs {{ instance.cost_per_person_add_independent|floatformat:1 }}/p
+		</div>
+	</div>
+
+</div>
+	
+	<div class="container">
+	<h3> Total Quantitites </h2>
+	</div>
+
+	<hr/>
+	<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 5000px;">
+	<div class="row simhaf">
+		<div class="col-xs-1" style="width:50px"><b>S.No</b></div>
+		<div class="col-xs-1" style="width:250px"><b>Recipe Name</b></div>
+		<div class="col-xs-1" style="width:100px"><b>Persons</b></div>
+		<div class="col-xs-1" style="width:100px"><b>Consumption capacity</b></div>
+		<div class="col-xs-1" style="width:300px"><b>Total Liters</b></div>
+		<div class="col-xs-1" style="width:300px"><b>Total Kgs</b></div>
+		<div class="col-xs-1" style="width:300px"><b>Total Pcs</b></div>
+	</div>
+	{% for obj in instance.menu_positions.all %}
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px">{{ forloop.counter }}</div>
+		<div class="col-xs-1 simha" style="width:250px">{{ obj.menurecipe.name }}</div>
+		<div class="col-xs-1 simha" style="width:100px">{{ obj.persons }}</div>
+		{% mvwith obj.get_person_consumption_dict_single as cons %}
+		<div class="col-xs-1 simha" style="width:100px">{{ cons.qty|floatformat:1 }} {{ cons.unit }}/p</div>
+
+		{% mvwith obj.total_quantity_in_kg_lt_pcs_dict.items as d1 %}
+		{% mvwith obj.convert_ml_g_pcs_to_ltr_kg_pcs.items as d2 %}
+		{% mvwith obj.get_person_consumption_dict.items as d3 %}
+		{% zip_lists3 d1 d2 d3 as three_zip %}
+		{% for k1,k2,k3 in three_zip %}
+			{% if k3.1 != 0 %}
+				<div class="col-xs-1 simha" style="width:300px"> {{ obj.persons }} x {{ k3.1|floatformat:2  }} {{ k3.0 }} x {{ k2.1 }} = {{ k1.1|floatformat:2  }} {{ k1.0 }} </div>
+			{% else %}
+				<div class="col-xs-1 simha" style="width:300px"></div>
+			{% endif %}
+		{% endfor %}
+	</div>
+	{% endfor %}
+	<div class="row simhaf">
+		<div class="col-xs-1" style="width:300px"><b>Total Quantites</b></div>
+		<div class="col-xs-1" style="width:100px"></div>
+		<div class="col-xs-1" style="width:100px"></div>
+		<div class="col-xs-1" style="width:300px">
+			{% mvwith instance.total_quantity_in_kg_lt_pcs_dict_all as total %}
+			{% for obj in instance.menu_positions.all %}
+				{% if obj.total_quantity_in_kg_lt_pcs_dict.ltr != 0 %}
+					{{ obj.total_quantity_in_kg_lt_pcs_dict.ltr|floatformat:1 }}
+					{% if not forloop.last %}
+					+ 
+					{% endif %} 
+				{% endif %}
+			{% endfor %}
+			{% if total.ltr != 0 %}
+				= {{ total.ltr|floatformat:1 }} ltr
+			{% endif %}
+		</div>
+		<div class="col-xs-1" style="width:300px">
+			{% mvwith instance.total_quantity_in_kg_lt_pcs_dict_all as total %}
+			{% for obj in instance.menu_positions.all %}
+				{% if obj.total_quantity_in_kg_lt_pcs_dict.kg != 0 %}
+					{{ obj.total_quantity_in_kg_lt_pcs_dict.kg|floatformat:1 }}
+					{% if not forloop.last %}
+					+ 
+					{% endif %} 
+				{% endif %}
+			{% endfor %}
+			{% if total.kg != 0 %}
+			 = {{ total.kg|floatformat:1 }} kg
+			{% endif %}
+		</div>
+		<div class="col-xs-1" style="width:300px">
+			{% mvwith instance.total_quantity_in_kg_lt_pcs_dict_all as total %}
+			{% for obj in instance.menu_positions.all %}
+				{% if obj.total_quantity_in_kg_lt_pcs_dict.pcs != 0 %}
+					{{ obj.total_quantity_in_kg_lt_pcs_dict.pcs|floatformat:1 }}
+					{% if not forloop.last %}
+					+ 
+					{% endif %} 
+				{% endif %}
+			{% endfor %}
+			{% if total.pcs != 0 %}
+			 = {{ total.pcs|floatformat:1 }} pcs
+			{% endif %}
+		</div>
+	</div>
+</div>
+<hr>
+
+
+<div class='container'>
+
+	{% include "messages_display.html" %}
+
+	{% crispy form %}
+	<hr/>
+	{{ form.errors }}<br>
+	{{ form.non_field_errors }}
+</div>
+
+
+
+	 <div class="container">
+	<h3> Recipes List Details </h1>
+	</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 5000px;">
+	<div class="row simhaf" >
+		<div class="col-xs-1" style="width:50px"><b>S.No</b></div>
+		<div class="col-xs-1" style="width:100px">Edit</div>
+		<div class="col-xs-1" style="width:200px">Recipe Name</div>
+		<div class="col-xs-1" style="width:100px">Edit</div>
+		<div class="col-xs-1" style="width:100px">Row Units</div>
+		<div class="col-xs-1" style="width:130px">Yeild (Bulk units)</div>
+		<div class="col-xs-1" style="width:220px">Yeild (kg,lt,pcs)</div>
+		<div class="col-xs-1" style="width:100px">Total persons</div>
+		<div class="col-xs-1" style="width:100px">Qty Req / Person</div>
+		<div class="col-xs-1" style="width:100px">Checking units</div>
+		<div class="col-xs-1" style="width:280px">Total Qty Req in (ltr,kg,pcs)</div>
+		<div class="col-xs-1" style="width:220px">Ratio = Required / Yeild</div>
+		<div class="col-xs-1" style="width:300px">Yeild Req (bulk)<br>Yeild(bulk) x Ratio</div>
+		<div class="col-xs-1" style="width:270px">Yeild Req (kg,lt,pcs)<br>Yeild(kg,lt,pcs) x Ratio</div>
+		<div class="col-xs-1" style="width:250px">Cost of recipe / Yeild</div>
+		<div class="col-xs-1" style="width:280px">Cost of recipe per bulk unit</div>
+		<div class="col-xs-1" style="width:250px">Cost of recipe per kg-ltr-pcs</div>
+		<div class="col-xs-1" style="width:270px">Total Required (ltr,kg,pcs)</div>
+		<div class="col-xs-1" style="width:260px">Total Cost for the recipe</div>
+		<div class="col-xs-1" style="width:100px">Qty Req / Person</div>
+		<div class="col-xs-1" style="width:420px">Cost per person</div>
+		<div class="col-xs-1" style="width:100px">Up date</div>
+		<div class="col-xs-1" style="width:100px">Cr date</div>
+		<div class="col-xs-1" style="width:100px"><b>Delete</b></div>
+		<div class="col-xs-1" style="width:100px">Menu</div>
+	</div>
+	{% for obj in object_list %}
+	<div class="row">
+		<div class="col-xs-1 simha" style="width:50px">{{ forloop.counter }}</div>
+		<!-- Edit -->
+		<div class="col-xs-1 simha" style="width:100px">
+			<b><a href='{{ obj.menurecipe.get_absolute_url_update }}'>Edit</a></b>
+		</div>
+		<!-- Recipe Name -->
+		<div class="col-xs-1 simha" style="width:200px">
+			<a href={{ obj.menurecipe.get_absolute_url_detail }} >{{ obj.menurecipe }}</a>
+		</div>
+		<!-- Edit -->
+		<div class="col-xs-1 simha" style="width:100px">
+			<b><a href='{{ obj.get_absolute_url_update }}'>Edit</a></b>
+		</div>
+		<!-- Row Units -->
+		<div class="col-xs-1 simha" style="width:100px">
+			Volume:<br>
+			Mass:<br>
+			Pieces:<br>
+		</div>
+		<!-- Yeild (Bulk units) -->
+		<div class="col-xs-1 simha" style="width:130px">
+			{% for key, value in obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items %}
+				{% if value != 0 %}
+				{{ key  }} : {{ value|floatformat:2 }} 
+				{% else %}
+
+				{% endif %}
+				<br>
+			{% endfor %}
+		</div>
+		<!-- Yeild (kg,lt,pcs) 35.00 x 10.00 = 350.00 ltr  -->
+		<div class="col-xs-1 simha" style="width:220px">
+			{% mvwith obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items as d1 %}
+			{% mvwith obj.menurecipe.get_all_quantity_with_kg_lt_pcs_units_string_dict.items as d2 %}
+			{% mvwith obj.menurecipe.get_bulk_units_to_kg_lt_pcs_dict.items as d3 %}
+			{% zip_lists3 d1 d2 d3 as three_zip %}
+			{% for k1,k2,k3 in three_zip %}
+			{% if k2.1 != 0 %}
+			{{ k3.1|floatformat:2 }} x {{ k1.1|floatformat:2  }} = {{ k2.1|floatformat:2  }} {{ k2.0 }}
+			{% else %}
+			
+			{% endif%}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- total persons -->
+		<div class="col-xs-1 simha" style="width:100px"><br>{{ obj.persons }} prs<br><br></div>
+		<!-- required per person -->
+		<div class="col-xs-1 simha" style="width:100px">
+			{% for key, value in obj.get_person_consumption_dict.items %}
+			{% if value != 0 %}
+			{{ key  }} {{ value|floatformat:2 }}
+			{% else %}
+
+			{% endif %} <br>
+			{% endfor %}
+		</div>
+		<!-- checking units -->
+		<div class="col-xs-1 simha" style="width:100px">
+			<br>
+			{{ obj.checking_units_matching }}
+			<br>
+			<br>    
+		</div>
+		<!-- Total Required (ltr,kg,pcs) 200 x 200.00/1000.00 = 40.00 kg  -->
+		<div class="col-xs-1 simha" style="width:280px">
+			{% mvwith obj.total_quantity_in_kg_lt_pcs_dict.items as d1 %}
+			{% mvwith obj.convert_ml_g_pcs_to_ltr_kg_pcs.items as d2 %}
+			{% mvwith obj.get_person_consumption_dict.items as d3 %}
+			{% zip_lists3 d1 d2 d3 as three_zip %}
+			{% for k1,k2,k3 in three_zip %}
+			{% if k3.1 != 0 %}
+			{{ obj.persons }} x {{ k3.1|floatformat:2  }} {{ k3.0 }} x {{ k2.1 }} = {{ k1.1|floatformat:2  }} {{ k1.0 }}
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Required/Yeild  40.00 / 50.00 = 0.80 -->
+		<div class="col-xs-1 simha" style="width:220px">
+			{% mvwith obj.menurecipe.get_all_quantity_with_kg_lt_pcs_units_string_dict.items as d1 %}
+			{% mvwith obj.total_quantity_in_kg_lt_pcs_dict.items as d2 %}
+			{% zip_lists2 d1 d2 as two_zip %}
+			{% for k1,k2 in two_zip %}
+			{% if k2.1 != 0 %}
+			{{ k2.1|floatformat:2 }} / {{ k1.1|floatformat:2  }} = {{ obj.menurecipe_factor_of_recipe_quantity_wrt_lt_kg_pcs|floatformat:2  }}
+			{% else %}
+			
+			{% endif%}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Yeild Req (bulk) 50.00 x 0.80 = 40.00 kg  -->
+		<div class="col-xs-1 simha" style="width:300px">
+			{% mvwith obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items as d1 %}
+			{% mvwith obj.recipe_get_total_bulk_units_for_menu_dict.items as d2 %}
+			{% zip_lists2 d1 d2 as two_zip %}
+			{% for k1,k2 in two_zip %}
+			{% if k1.1 != 0 %}
+			{{ k2.0 }} {{ k1.1|floatformat:2 }} x {{ obj.menurecipe_factor_of_recipe_quantity_wrt_lt_kg_pcs|floatformat:2  }} = {{ k2.1|floatformat:2  }} {{ k2.0 }}
+			{% else %}
+			
+			{% endif%}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Yeild Req (kg,lt,pcs) 40.00 x 1.00 = 40.00 kg  -->
+		<div class="col-xs-1 simha" style="width:270px">
+			{% mvwith obj.recipe_get_total_bulk_units_for_menu_dict.items as d1 %}
+			{% mvwith obj.menurecipe.get_bulk_units_to_kg_lt_pcs_dict.items as d2 %}
+			{% mvwith obj.recipe_get_total_kg_lt_pcs_units_for_menu_dict.items as d3 %}
+			{% zip_lists3 d1 d2 d3 as three_zip %}
+			{% for k1,k2,k3 in three_zip %}
+			{% if k2.1 != 0 %}
+			{{ k1.0 }} {{ k1.1|floatformat:2 }} x {{ k2.1|floatformat:2  }} = {{ k3.1|floatformat:2  }} {{ k3.0 }}
+			{% else %}
+			
+			{% endif%}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Total cost for the recipe Yeild  Rs 0.00 for 3.50 tub35  -->
+		<div class="col-xs-1 simha" style="width:250px">
+			{% for k,v in obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items %}
+			{% if v != 0 %}
+			Rs {{  obj.menurecipe.get_cost_of_the_recipe|floatformat:2  }} for {{ v|floatformat:2 }} {{ k }}
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<!--Cost per bulk unit 0.00 / 3.50 = Rs 0.00 / tub35  -->
+		<div class="col-xs-1 simha" style="width:280px">
+			{% mvwith obj.menurecipe.get_cost_of_the_recipe_per_bulk_unit_dict.items as d1 %}
+			{% mvwith obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items as d2 %}
+			{% zip_lists2 d1 d2 as two_zip %}
+			{% for k1,k2 in two_zip %}
+			{% if k2.1 != 0 %}
+			{{  obj.menurecipe.get_cost_of_the_recipe|floatformat:2  }} / {{ k2.1|floatformat:2 }} = Rs {{ k1.1|floatformat:2 }} / {{ k2.0 }}
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Recipe Cost per kg-ltr-pcs  7.50 x 1.00 = Rs 7.50/kg -->
+		<div class="col-xs-1 simha" style="width:250px">
+			{% mvwith obj.menurecipe.get_cost_of_the_recipe_per_bulk_unit_dict.items as d1 %}
+			{% mvwith obj.menurecipe.get_bulk_units_to_kg_lt_pcs_dict.items as d2 %}
+			{% mvwith obj.menurecipe.get_cost_of_the_recipe_per_kg_lt_pcs_unit_dict.items as d3 %}
+			{% mvwith obj.menurecipe.get_all_quantity_with_bulk_units_string_dict.items as d4 %}
+			{% zip_lists4 d1 d2 d3 d4 as four_zip %}
+			{% for k1,k2,k3,k4 in four_zip %}
+			{% if k4.1 != 0 %}
+			{{ k1.1|floatformat:2 }} x {{ k2.1|floatformat:2  }} = Rs {{ k3.1|floatformat:2  }}/{{ k3.0 }}
+			{% else %}
+
+			{% endif%}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- Total Required (ltr,kg,pcs) 200 x 200.00/1000.00 = 40.00 kg  -->
+		<div class="col-xs-1 simha" style="width:270px">
+			{% mvwith obj.total_quantity_in_kg_lt_pcs_dict.items as d1 %}
+			{% mvwith obj.convert_ml_g_pcs_to_ltr_kg_pcs.items as d2 %}
+			{% mvwith obj.get_person_consumption_dict.items as d3 %}
+			{% zip_lists3 d1 d2 d3 as three_zip %}
+			{% for k1,k2,k3 in three_zip %}
+			{% if k3.1 != 0 %}
+			{{ obj.persons }} x {{ k3.1|floatformat:2  }} {{ k3.0 }} x {{ k2.1 }} = {{ k1.1|floatformat:2  }} {{ k1.0 }}
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- total cost 6.00 x 40.00 = Rs 240.00  -->
+		 <div class="col-xs-1 simha" style="width:270px">
+			{% mvwith obj.menurecipe.get_cost_of_the_recipe_per_kg_lt_pcs_unit_dict.items as d1 %}
+			{% mvwith obj.total_quantity_in_kg_lt_pcs_dict.items as d2 %}
+			{% mvwith obj.total_cost_for_total_quantity_kg_lt_pc_dict.items as d3 %}
+			{% zip_lists3 d1 d2 d3 as three_zip %}
+			{% for k1,k2,k3 in three_zip %}
+			{% if k2.1 != 0 %}
+			{{ k1.1|floatformat:4  }} x {{ k2.1|floatformat:4 }} = Rs {{ k3.1|floatformat:4  }}
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<!-- required per person -->
+		<div class="col-xs-1 simha" style="width:100px">
+			{% for key, value in obj.get_person_consumption_dict.items %}
+			{% if value != 0 %}
+			{{ key  }} {{ value|floatformat:2 }}
+			{% else %}
+
+			{% endif %} 
+			<br>
+			{% endfor %}
+		</div>
+		 <!-- cost per person -->
+		<div class="col-xs-1 simha" style="width:420px">
+			{% mvwith obj.get_person_consumption_dict.items as d1 %}
+			{% mvwith obj.convert_ml_g_pcs_to_ltr_kg_pcs.items as d2 %}
+			{% mvwith obj.menurecipe.get_cost_of_the_recipe_per_kg_lt_pcs_unit_dict.items as d3 %}
+			{% mvwith obj.total_cost_per_person_kg_lt_pc_dict.items as d4 %}
+			{% zip_lists4 d1 d2 d3 d4 as four_zip %}
+			{% for k1,k2,k3,k4 in four_zip %}
+			{% if k1.1 != 0 %}
+			{{ k1.1|floatformat:2  }} {{ k1.0 }} x {{ k2.1 }} x Rs {{ k3.1|floatformat:4 }} / {{ k3.0 }} = Rs {{ k4.1|floatformat:4  }} / prsn
+			{% else %}
+
+			{% endif %}
+			<br>
+			{% endfor %}
+		</div>
+		<div class="col-xs-1 simha" style="width:100px">{{ obj.updated }}</div>
+		<div class="col-xs-1 simha" style="width:100px">{{ obj.timestamp }}</div>
+		<div class="col-xs-1 simha" style="width:100px">
+		<b><a href='{{ obj.get_absolute_url_confirm }}'>Delete</a></b>
+		</div>
+		<div class="col-xs-1 simha" style="width:100px">
+		{{ obj.menu }}
+		</div>
+	</div>
+	<hr/>
+	{% endfor %}        
+</div>
+	
+	<div class="container">
+	<h3> Total Ingredients Required </h3>
+	</div>
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 5000px;">
+	<div class="row simhaf"  >
+		<div class="col-xs-1" style="width:50px"><b>S.No</b></div>
+		<div class="col-xs-1" style="width:100px">Ingredient</div>
+		<div class="col-xs-1" style="width:100px">Type</div>
+		<div class="col-xs-1" style="width:100px">M Unit</div>
+		<div class="col-xs-1" style="width:100px">Rate/Unit</div>
+		<div class="col-xs-2" style="width:270px">Name of Recipe in which the ingredient is used</div>
+		<div class="col-xs-1" style="width:130px">Actual Ingredient quantity (bulk units)</div>
+		<div class="col-xs-1" style="width:115px">Density</div>
+		<div class="col-xs-1" style="width:90px">Actual Ingredient quantity (Cost units)</div>
+		<div class="col-xs-1" style="width:100px">Factor</div>
+		<div class="col-xs-1" style="width:350px">Req. Ingredient quantity (Cost units)</div>
+		<div class="col-xs-1" style="width:250px">Total Qty Req</div>
+		<div class="col-xs-1" style="width:130px">Req Recipe Breakup w.r.t BUlk Unit</div>
+		<div class="col-xs-1" style="width:270px;">Name of Recipe in which the ingredient is used</div>
+		<div class="col-xs-1" style="width:100px">x Factor</div>
+		<div class="col-xs-2" style="width:130px">Actual Recipe Breakup w.r.t BUlk Unit</div>
+
+	</div>
+	<hr/>
+
+
+	{% for ingredient in ingredients_dictinct %}
+	<div class="row" >
+		<div class="col-xs-1 simha" style="width:50px">{{ forloop.counter }}</div>
+		<!-- (1) -->
+		<div class="col-xs-1 simha" style="width:100px"><a href='{{ ingredient.get_absolute_url_update }}?next={{ request.path }}'>{{ ingredient.name }}</a>
+		</div>
+		<!-- (2) -->
+		<div class="col-xs-1 simha" style="width:100px">{{ ingredient.typeofingredient}}</div>
+		<!-- (3) -->
+		<div class="col-xs-1 simha" style="width:100px">{{ ingredient.munit }}</div>
+		<!-- (4) -->
+		<div class="col-xs-1 simha" style="width:100px">{{ ingredient.rate }}/{{ ingredient.munit }}</div>
+
+		
+		<div class="col-xs-1 simha" style="width:270px"> 
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+				{% ingredient_get_cost_quantity_data ingredient menuposition as cost_quantity %}
+				{% for gaura in cost_quantity.hare %}
+					<li style="list-style-position: outside;">
+						 :: {{ menuposition.menurecipe.name }}<br>
+						{% for n in gaura.count|times %}
+						<br>
+						{% endfor %}
+					</li>
+				{% endfor %}
+		{% endfor %}
+		</div>
+
+		<div class="col-xs-1 simha" style="width:130px">
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+			{% ingredient_quantity_bulk_units_for_the_menu_recipe ingredient menuposition as recipe_quantity%}
+			{% for gaura in recipe_quantity %}
+			<li style="list-style-position: outside;">
+				{% for key, value in gaura.items %}
+					{{ value|floatformat:2 }} {{ key.slug  }}<br>
+				{% endfor %}
+			</li>
+			{% endfor %}
+		{% endfor %}
+		</div>
+
+		<!-- (density) -->
+		<div class="col-xs-1 simha" style="width:115px">
+			{{ ingredient.density_kg_per_lt|floatformat:2 }} kg/lt<br>
+			{{ ingredient.density_pcs_per_kg|floatformat:2 }} pcs/kg<br>
+			{{ ingredient.density_pcs_per_lt|floatformat:2 }} pcs/lt
+		</div>
+
+		<div class="col-xs-1 simha" style="width:90px">
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+			{% ingredient_get_cost_quantity_data ingredient menuposition as cost_quantity%}
+			{% for gaura in cost_quantity.hare %}
+				<li style="list-style-position: outside;">
+					{{ gaura.cost|floatformat:2 }} {{ gaura.unit  }}<br>
+				{% for n in gaura.count|times %}
+				<br>
+				{% endfor %}
+				</li>
+			{% endfor %}
+		{% endfor %}
+		</div>
+
+
+		<div class="col-xs-1 simha" style="width:100px;">
+			{% ingredient_menu_recipes ingredient instance as recipelist %}
+			{% for menuposition in recipelist %}
+				{% ingredient_get_cost_quantity_data ingredient menuposition as cost_quantity %}
+				{% for gaura in cost_quantity.hare %}
+				<li style="list-style-position: outside;">
+					x {{ menuposition.menurecipe_factor_of_recipe_quantity_wrt_lt_kg_pcs|floatformat:2 }}<br>
+					{% for n in gaura.count|times %}
+					<br>
+					{% endfor %}
+				</li>
+				{% endfor %}
+			{% endfor %}
+		</div>
+
+
+		
+		<div class="col-xs-1 simha" style="width:350px;">
+			{% ingredient_menu_recipes ingredient instance as recipelist %}
+			{% for menuposition in recipelist %}
+			{% ingredient_get_cost_quantity_data_multiply_with_menuposition_factor ingredient menuposition as cost_quantity %}
+			{% for gaura in cost_quantity.hare %}
+			<li style="list-style-position: outside;">
+				{{ gaura.cost|floatformat:2 }} {{ gaura.unit  }} :: {{ menuposition.menurecipe.name }}<br>
+				{% for n in gaura.count|times %}
+				<br>
+				{% endfor %}
+			</li>
+			{% endfor %}
+			{% endfor %}
+		</div>
+	 
+
+		<!-- (5) -->
+		<div class="col-xs-1 simha" style="width:250px">
+			{% ingredient_quantity_for_the_menu ingredient instance as totalwt %}
+			{% for key, value in totalwt.items %}
+				{{ key|floatformat:2|floatformat:2 }}  {{ value }}- {{ ingredient.name }}
+			{% endfor %}
+		</div>
+
+		<div class="col-xs-1 simha" style="width:130px">
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+			{% ingredient_quantity_bulk_units_for_the_menu_recipe_multiply_with_menuposition_factor ingredient menuposition as recipe_quantity%}
+			{% for gaura in recipe_quantity %}
+				<li style="list-style-position: outside;">
+					{% for key, value in gaura.items %}
+						{{ value|floatformat:2 }} {{ key.slug  }}<br>
+					{% endfor %}
+				</li>
+			{% endfor %}
+		{% endfor %}
+		</div>
+
+		
+		<div class="col-xs-1 simha" style="width:270px"> 
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+				{% ingredient_get_cost_quantity_data ingredient menuposition as cost_quantity %}
+				{% for gaura in cost_quantity.hare %}
+					<li style="list-style-position: outside;">
+						 :: {{ menuposition.menurecipe.name }}<br>
+						{% for n in gaura.count|times %}
+						<br>
+						{% endfor %}
+					</li>
+				{% endfor %}
+		{% endfor %}
+		</div>
+
+		<div class="col-xs-1 simha" style="width:100px;">
+			{% ingredient_menu_recipes ingredient instance as recipelist %}
+			{% for menuposition in recipelist %}
+				{% ingredient_get_cost_quantity_data ingredient menuposition as cost_quantity %}
+				{% for gaura in cost_quantity.hare %}
+				<li style="list-style-position: outside;">
+					x {{ menuposition.menurecipe_factor_of_recipe_quantity_wrt_lt_kg_pcs|floatformat:2 }}<br>
+					{% for n in gaura.count|times %}
+					<br>
+					{% endfor %}
+				</li>
+				{% endfor %}
+			{% endfor %}
+		</div>
+
+		<div class="col-xs-1 simha" style="width:130px">
+		{% ingredient_menu_recipes ingredient instance as recipelist %}
+		{% for menuposition in recipelist %}
+			{% ingredient_quantity_bulk_units_for_the_menu_recipe ingredient menuposition as recipe_quantity%}
+			{% for gaura in recipe_quantity %}
+			<li style="list-style-position: outside;">
+				{% for key, value in gaura.items %}
+					{{ value|floatformat:2 }} {{ key.slug  }}<br>
+				{% endfor %}
+			</li>
+			{% endfor %}
+		{% endfor %}
+		</div>
+		
+
+	</div>
+	<hr>
+
+	<div class="row" >
+
+	</div>
+	{% endfor %}
+</div>
+
+
+ <div class="container">
+	{% ingredient_quantity_final_cost_for_the_menu instance  as total_ing_cost %}
+	 <h4> Total cost of Ingredients: Rs {{ total_ing_cost|floatformat:2 }}  <h4>
+</div>
+	<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: 100px;padding-left: 20px;padding-right: 20px;width: 1200px;">
+		<div class="row simhaf"  >
+			<div class="col-xs-2" style="width:50px"><b>S.No</b></div>
+			<div class="col-xs-2" style="width:150px"><b>Type of Ingredient</b></div>
+			<div class="col-xs-2" style="width:100px"><b>No: of items</b></div>
+			<div class="col-xs-2" style="width:110px"><b>Total Cost</b></div>
+			<div class="col-xs-1" style="width:110px"><b>Total Volume (lts)</b></div>
+			<div class="col-xs-1" style="width:110px"><b>Total Volume (kg)</b></div>
+			<div class="col-xs-1" style="width:110px"><b>Total pieces (pcs) </b></div>
+		</div>
+		{% ingredient_quantity_final_cost_based_on_type_of_ingredient instance as final %}
+		{% for typeofing in final %}
+		<div class="row"  >
+			<div class="col-xs-2 simha" style="width:50px">{{ forloop.counter }}</div>
+			<div class="col-xs-2 simha" style="width:150px">{{ typeofing.type }}</div>
+			<div class="col-xs-2 simha" style="width:100px">{{ typeofing.count }}</div>
+			<div class="col-xs-2 simha" style="width:110px">Rs {{ typeofing.cost|floatformat:2 }}</div>
+			<div class="col-xs-1 simha" style="width:110px">{{ typeofing.tvol|floatformat:2 }} lts</div>
+			<div class="col-xs-1 simha" style="width:110px">{{ typeofing.twt|floatformat:2 }} kg</div>
+			<div class="col-xs-1 simha" style="width:110px">{{ typeofing.tpcs|floatformat:2 }} pcs</div>
+		</div>
+		{%  endfor %}
+	</div>
+
+
+
+<div class="container">
+	<form>
+		<div class="row" style="border-style: solid"}>
+			<div class="col-md-2">Name</div>
+			<div class="col-md-2">Cost</div>
+			<div class="col-md-2">quantity(in kg)</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">Banana</div>
+			<div class="col-md-2">
+				<input type="text" name="firstname">
+			</div>
+			<div class="col-md-2">1</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">Tomato</div>
+			<div class="col-md-2">
+				<input type="text" name="firstname">
+			</div>
+			<div class="col-md-2">2</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">Apple</div>
+			<div class="col-md-2">
+				<input type="text" name="firstname">
+			</div>
+			<div class="col-md-2">3</div>
+		</div>
+		<input type="submit" name="Ok">
+	</form> 
+</div>
+ 
+
+
+
+
+{% endblock content %}

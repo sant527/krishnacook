@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block detail_link %}
+  <li><a href='{% url "menus:list" %}'>Menus</a></li>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-non-responsive simhat" style="margin-right: auto;margin-left: auto;padding-left: 20px;padding-right: 20px;width: 1500px;">
+<div class="row simhaf">
+	<div class="col-xs-1" style="width:100px"><b>S.No/Id</b></div>
+	<div class="col-xs-1" style="width:120px"><b>Name</b></div>
+	<div class="col-xs-1" style="width:70px"><b>M Unit</b></div>
+	<div class="col-xs-1" style="width:150px"><b>Density</b></div>
+	<div class="col-xs-1" style="width:100px"><b>Rate</b></div>
+	<div class="col-xs-1" style="width:150px"><b>Type of Ingredient</b></div>
+	<div class="col-xs-1" style="width:150px"><b>Up Date</b></div>
+	<div class="col-xs-1" style="width:150px"><b>Cr Date</b></div>
+</div>
+<hr/>
+{% for obj in objects_list %}
+<div class="row">
+    <div class="col-xs-1 simha" style="width:100px">{{ object_list.start_index|add:forloop.counter|add:"-1" }}::{{ obj.id }}</div>
+	<div class="col-xs-1 simha" style="width:120px">{{ obj.ingredient.name }}</div>
+	<div class="col-xs-1 simha" style="width:70px">{{ obj.ingredient.munit }}</div>
+	<div class="col-xs-1 simha" style="width:150px">
+	    {% if obj.density_kg_per_lt > 0 %} - {{ obj.density_kg_per_lt }} kg/lt {% endif %}<br>
+		{% if obj.density_kg_per_pcs > 0 %} - {{ obj.density_kg_per_pcs }} kg/pcs {% endif %} <br>
+		{% if obj.density_pcs_per_lt > 0 %}- {{ obj.density_pcs_per_lt }} pcs/lt {% endif %} <br>
+	</div>
+	<div class="col-xs-1 simha" style="width:100px">{{ obj.rate }}/{{ obj.ingredient.munit }}</div>
+	<div class="col-xs-1 simha" style="width:150px">{{ obj.ingredient.typeofingredient }}</div>
+	<div class="col-xs-1 simha" style="width:150px">{{ obj.updated }}</div>
+	<div class="col-xs-1 simha" style="width:150px">{{ obj.timestamp }}</div>
+	
+
+</div>
+<hr/>
+{% endfor %}
+</div>
+{% endblock content %}
