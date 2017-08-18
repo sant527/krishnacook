@@ -1,0 +1,54 @@
+body {
+  word-wrap: break-word;
+}
+
+.simha {
+	background-color: wheat !important;
+	background-clip: content-box !important;
+}
+
+.simha2 {
+	background-color: wheat !important;
+	background-clip: content-box !important;
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+}
+
+
+
+.simhat {
+	background-color: springgreen !important;
+	border:1px solid black;
+}
+
+.simhaf {
+	background-color: orangered !important;
+	border:1px solid black;
+}
+
+
+.simhab {
+	background-color: wheat !important;
+	background-clip: content-box !important; 
+}
+
+
+.simhabt {
+	background-color: inherit !important;
+	border:1px solid black;
+}
+
+.simhabf {
+	background-color: goldenrod !important;
+	border:1px solid black;
+}
+
+ul {
+	padding-left:0px;
+	list-style-position: outside;
+	margin-left: 1em;
+}
+
+.simhaf > .row + .row {
+   border-top:1px solid;
+}
